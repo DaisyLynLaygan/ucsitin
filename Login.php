@@ -3,10 +3,6 @@
 session_start();
 include './connection.php';
 
-// Check if the connection was successful
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
 
 // Handle login when form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
@@ -28,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
             // Store user session
             $_SESSION['username'] = $row['username'];
             $_SESSION['idno'] = $row['idno'];
-
+            $_SESSION['profile_picture'] = $row['profile_picture'];
             // Redirect to dashboard
             header("Location: dashboard.php");
             exit();
