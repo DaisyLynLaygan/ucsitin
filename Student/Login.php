@@ -247,7 +247,7 @@ $conn->close();
     <div class="right">
         <form method="POST" style="background-color: whitesmoke;">
             <center>
-                <img src="../sitin/CCS LOGO.png" width="30%" height="auto"/>
+                <img src="../CCS LOGO.png" width="30%" height="auto"/>
             </center>
             <h1><b>CCS Sitin Monitoring System</b></h1>
             <div>
