@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+$check = $_SESSION['idno'] ==''? true : false;
+if($check){
+    header("Location: login.php");
+}
+echo $_SESSION['idno'];
 // Ensure the uploads directory exists
 $upload_dir = "uploads/";
 if (!is_dir($upload_dir)) {
@@ -12,7 +17,7 @@ $userProfile = [
     'firstname' => $_SESSION['firstname'] ?? '',
     'lastname' => $_SESSION['lastname'] ?? '',
     'middlename' => $_SESSION['middlename'] ?? '',
-    'profile_picture' => $_SESSION['profile_picture'] ?? 'default.png'
+    'profile_picture' => $_SESSION['profile_picture'] ??'',
 ];
 
 $remainingSessions = 30; // Example value, ideally retrieved from a database
@@ -64,16 +69,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin: 0;
         }
         .sidebar {
-            width: 250px;
-            background-color: purple;
-            color: white;
-            height: 100vh;
-            padding: 20px;
-            position: fixed;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+                width: 250px;
+                background-color: purple;
+                color: white;
+                height: 100vh;
+                padding: 20px;
+                position: fixed; 
+                top: 0;
+                left: 0;
+                overflow-y: auto; 
+            }
+
         .profile-section {
             text-align: center;
             margin-bottom: 20px;
@@ -145,16 +151,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <div class="sidebar">
         <div class="profile-section">
-            <img src="<?php echo htmlspecialchars($userProfile['profile_picture']); ?>" alt="Profile Picture" class="profile-pic" id="display-pic">
+            <img src="<?php echo $userProfile['profile_picture'] != '' ? htmlspecialchars($userProfile['profile_picture']) : 'de.jpg'; ?>" alt="Profile Picture" class="profile-pic" id="display-pic">
             <p><?php echo htmlspecialchars($userProfile['firstname'] . " " . $userProfile['lastname']); ?></p>
         </div>
         <ul>
             <li><a href="dashboard.php">Home</a></li>
             <li><a href="profile.php">Profile</a></li>
-            <li><a href="#">Announcements</a></li>
             <li><a href="SitinRules.php">Sit-in Rules</a></li>
-            <li><a href="#">Sit-in History</a></li>
-            <li><a href="#">Remaining Sessions: <span id="sessionCount"><?php echo $remainingSessions; ?></span></a></li>
+            <li><a href="Labrules&Regulations.php">Lab Rules & Regulations</a></li>
+            <li><a href="announcements.php">Announcement</a></li>
+            <li><a href="Reservation.php">Reservation</a></li>
+            <li><a href="SitinHistory.php">Sit-in History</a></li>
             <li><a href="logout.php">Logout</a></li>
         </ul>
     </div>

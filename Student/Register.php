@@ -1,17 +1,5 @@
 <?php
-// Database connection settings
-$servername = "localhost";
-$username = "root"; // Database username
-$password = ""; // Database password
-$dbname = "sitin"; // Your database name
-
-// Create a connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check if the connection was successful
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+include './connection.php';
 
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -229,7 +217,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
                 <div class="btn-container">
                     <button type="submit" class="btn btn-signin">Sign In</button>
-                    <a href="register.php" class="btn btn-register"><center>Login</center></a>
+                    <a href="login.php" class="btn btn-register"><center>Login</center></a>
                 </div>
             </form>
         </div>

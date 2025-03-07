@@ -1,20 +1,8 @@
 
 <?php
 session_start();
+include './connection.php';
 
-// Database connection settings
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "sitin";
-
-// Create a connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check if the connection was successful
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
 
 // Handle login when form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
@@ -36,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
             // Store user session
             $_SESSION['username'] = $row['username'];
             $_SESSION['idno'] = $row['idno'];
-
+            $_SESSION['profile_picture'] = $row['profile_picture'];
             // Redirect to dashboard
             header("Location: dashboard.php");
             exit();
@@ -259,7 +247,7 @@ $conn->close();
     <div class="right">
         <form method="POST" style="background-color: whitesmoke;">
             <center>
-                <img src="../sitin/CCS LOGO.png" width="30%" height="auto"/>
+                <img src="../CCS LOGO.png" width="30%" height="auto"/>
             </center>
             <h1><b>CCS Sitin Monitoring System</b></h1>
             <div>
