@@ -66,12 +66,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $_SESSION['year'] = $year;
     $_SESSION['email'] = $email;
     
-    // Fetch the updated data from the database
-    $stmt->execute();
-    $result = $stmt->get_result();
+    $fetch_profile = $conn->prepare("SELECT idno, firstname, lastname, middlename, course, year, email, username, profile_picture FROM student WHERE username = ?");
+    $fetch_profile->bind_param("s", $username);
+    $fetch_profile->execute();
+    $result = $fetch_profile->get_result();
     $userProfile = $result->fetch_assoc();
+    
 }
-
 // Close the database connection
 $conn->close();
 ?>
@@ -85,74 +86,129 @@ $conn->close();
     <title>Profile - CCS Sit-in Monitoring</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        body {
-            display: flex;
-            font-family: Arial, sans-serif;
-            background-color: whitesmoke;
-            margin: 0;
-        }
-        .sidebar {
-                width: 250px;
-                background-color: purple;
-                color: white;
-                height: 100vh;
-                padding: 20px;
-                position: fixed; 
-                top: 0;
-                left: 0;
-                overflow-y: auto; 
-            }
+        /* General styles */
+body {
+    display: flex;
+    font-family: Arial, sans-serif;
+    background-color: whitesmoke;
+    margin: 0;
+}
 
-        .profile-section {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .profile-pic {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 3px solid white;
-            cursor: pointer;
-        }
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
-            width: 100%;
-        }
-        .sidebar ul li {
-            padding: 15px;
-            text-align: center;
-            transition: background 0.3s;
-        }
-        .sidebar ul li a {
-            color: white;
-            text-decoration: none;
-            display: block;
-        }
-        .sidebar ul li:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        .main-content {
-            margin-left: 270px;
-            padding: 30px;
-            width: calc(100% - 270px);
-        }
-        .profile-container {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            margin: auto;
-        }
-        .profile-container h2 {
-            text-align: center;
-        }
-        .profile-container input, .profile-container select, .profile-container button {
-            width: 100%;
-            margin-top: 10px;
-            padding: 10px;
-        }
+/* Sidebar */
+.sidebar {
+    width: 150px;
+    background-color: #6a0dad; /* Purple theme */
+    color: white;
+    height: 100vh;
+    padding: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow-y: auto;
+}
+
+.profile-section {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.profile-pic {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid white;
+    cursor: pointer;
+}
+
+.sidebar p {
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+}
+
+.sidebar ul li {
+    padding: 15px;
+    text-align: left;
+    transition: background 0.3s;
+}
+
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    font-size: 16px;
+}
+
+.sidebar ul li:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 270px;
+    padding: 30px;
+    width: calc(100% - 270px);
+}
+
+/* Profile Container */
+.profile-container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    max-width: 700px;
+    margin: auto;
+    text-align: center;
+}
+
+.profile-container h2 {
+    background-color: purple;
+    color: white;
+    padding: 15px;
+    border-radius: 8px 8px 0 0;
+}
+
+.profile-container label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+    text-align: left;
+}
+
+.profile-container input,
+.profile-container select {
+    width: calc(100% - 20px);
+    margin-top: 5px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.profile-container input:read-only {
+    background-color: #f3f3f3;
+}
+
+button {
+    background-color:rgb(125, 60, 255);
+    color: white;
+    padding: 10px;
+    border: none;
+    width: 100%;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    margin-top: 15px;
+}
+
+button:hover {
+    background-color: #652ebc;
+}
+
     </style>
 </head>
 <body>
@@ -162,13 +218,14 @@ $conn->close();
             <p><?php echo htmlspecialchars($userProfile['firstname'] . " " . $userProfile['lastname']); ?></p>
         </div>
         <ul>
-            <li><a href="dashboard.php">Home</a></li>
+        <li><a href="dashboard.php">Home</a></li>
             <li><a href="profile.php">Profile</a></li>
             <li><a href="SitinRules.php">Sit-in Rules</a></li>
-            <li><a href="Labrules&Regulations.php">Lab Rules & Regulations</a></li>
+            <li><a href="Labrules&Regulations.php">Lab Rules</a></li>
             <li><a href="announcements.php">Announcement</a></li>
             <li><a href="Reservation.php">Reservation</a></li>
-            <li><a href="SitinHistory.php">Sit-in History</a></li>
+            <li><a href="SitinHistory.php">History</a></li>
+            <li><a href="ViewSession.php">Session</a></li>
             <li><a href="logout.php">Logout</a></li>
         </ul>
     </div>

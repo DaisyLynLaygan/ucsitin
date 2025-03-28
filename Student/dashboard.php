@@ -61,25 +61,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCS Sit-in Monitoring Dashboard</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <style>
         body {
             display: flex;
             font-family: Arial, sans-serif;
-            background-color: whitesmoke;
+            background-color: #f4f4f4;
             margin: 0;
         }
         .sidebar {
-                width: 250px;
-                background-color: purple;
-                color: white;
-                height: 100vh;
-                padding: 20px;
-                position: fixed; 
-                top: 0;
-                left: 0;
-                overflow-y: auto; 
-            }
-
+            width: 150px;
+            background-color: #4B0082;
+            color: white;
+            height: 100vh;
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+        }
         .profile-section {
             text-align: center;
             margin-bottom: 20px;
@@ -89,100 +90,139 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             height: 80px;
             border-radius: 50%;
             border: 3px solid white;
-            cursor: pointer;
-        }
-        .hidden-input {
-            display: none;
         }
         .sidebar ul {
             list-style: none;
             padding: 0;
-            width: 100%;
         }
         .sidebar ul li {
             padding: 15px;
-            text-align: center;
-            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        .sidebar ul li i {
+            margin-right: 10px;
         }
         .sidebar ul li a {
             color: white;
             text-decoration: none;
-            display: block;
+            flex: 1;
         }
         .sidebar ul li:hover {
             background-color: rgba(255, 255, 255, 0.2);
         }
         .main-content {
             margin-left: 270px;
-            padding: 40px;
+            padding: 20px;
             width: calc(100% - 270px);
             display: flex;
             flex-direction: column;
+        }
+        .top-section {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
         }
-        .dashboard-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        .dashboard-container {
+            display: flex;
             gap: 20px;
-            width: 100%;
-            max-width: 900px;
+            margin-top: 20px;
         }
-        .card {
+        .column {
+            flex: 1;
             background: white;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            text-align: center;
         }
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 200px;
-            }
-            .main-content {
-                margin-left: 220px;
-                width: calc(100% - 220px);
-            }
-            .dashboard-cards {
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            }
+        .chart-container {
+            width: 100%;
+            height: 300px;
+        }
+        button {
+            background-color: #4B0082;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        button:hover {
+            background-color: #6A0DAD;
         }
     </style>
 </head>
 <body>
-    <div class="sidebar">
+<div class="sidebar">
         <div class="profile-section">
-            <img src="<?php echo $userProfile['profile_picture'] != '' ? htmlspecialchars($userProfile['profile_picture']) : 'de.jpg'; ?>" alt="Profile Picture" class="profile-pic" id="display-pic">
+            <img src="<?php echo htmlspecialchars($userProfile['profile_picture'] ?? 'de.jpg'); ?>" alt="Profile Picture" class="profile-pic">
             <p><?php echo htmlspecialchars($userProfile['firstname'] . " " . $userProfile['lastname']); ?></p>
         </div>
         <ul>
-            <li><a href="dashboard.php">Home</a></li>
+        <li><a href="dashboard.php">Home</a></li>
             <li><a href="profile.php">Profile</a></li>
             <li><a href="SitinRules.php">Sit-in Rules</a></li>
-            <li><a href="Labrules&Regulations.php">Lab Rules & Regulations</a></li>
+            <li><a href="Labrules&Regulations.php">Lab Rules</a></li>
             <li><a href="announcements.php">Announcement</a></li>
             <li><a href="Reservation.php">Reservation</a></li>
-            <li><a href="SitinHistory.php">Sit-in History</a></li>
+            <li><a href="SitinHistory.php">History</a></li>
+            <li><a href="ViewSession.php">Session</a></li>
             <li><a href="logout.php">Logout</a></li>
         </ul>
     </div>
     <div class="main-content">
-        <h1>Welcome to CCS Sit-in Monitoring</h1>
-        <p>Manage your sit-in sessions and rules easily.</p>
-        
-        <div class="dashboard-cards">
-            <div class="card">
-                <h3>Total Sessions</h3>
-                <p><?php echo $remainingSessions; ?></p>
+        <div class="top-section">
+            <h2>Welcome, Bravo!</h2>
+            <div>
+                <button><i class="fas fa-bell"></i> Notifications</button>
+                <button><i class="fas fa-calendar"></i> Calendar</button>
             </div>
-            <div class="card">
-                <h3>Active Reservations</h3>
-                <p>5</p>
+        </div>
+        <div class="dashboard-container">
+            <div class="column">
+                <h3>Sit-In Laboratory Rules</h3>
+                <ul>
+                    <li>No games, personal devices, or inappropriate content.</li>
+                    <li>Do not alter computer settings or delete files.</li>
+                    <li>Follow seating arrangements and deposit bags at the counter.</li>
+                    <li>No food, drinks, or smoking in the lab.</li>
+                    <li>Disturbances may lead to removal or security intervention.</li>
+                    <li>Handle equipment with care.</li>
+                    <li>Use headphones for audio.</li>
+                    <li>Log out after use.</li>
+                </ul>
             </div>
-            <div class="card">
-                <h3>Completed Sessions</h3>
-                <p>10</p>
+            <div class="column">
+                <h3>Lab Usage Chart</h3>
+                <canvas id="labUsageChart" class="chart-container"></canvas>
             </div>
         </div>
     </div>
+    <script>
+        const ctx = document.getElementById('labUsageChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Lab 544', 'Lab 542', 'Lab 530', 'Lab 524', 'Lab 526', 'Lab 525'],
+                datasets: [{
+                    label: 'Sit-In Usage',
+                    data: [10, 18, 7, 14, 9, 6],
+                    backgroundColor: ['red', 'blue', 'orange', 'teal', 'purple', 'gold']
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>

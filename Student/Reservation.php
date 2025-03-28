@@ -86,8 +86,8 @@ $conn->close();
             margin: 0;
         }
         .sidebar {
-                width: 250px;
-                background-color: purple;
+                width: 150px;
+                background-color: #6a0dad;
                 color: white;
                 height: 100vh;
                 padding: 20px;
@@ -232,13 +232,14 @@ $conn->close();
 <p><?php echo htmlspecialchars($firstname . " " . $lastname); ?></p>
         </div>
         <ul>
-            <li><a href="dashboard.php">Home</a></li>
+        <li><a href="dashboard.php">Home</a></li>
             <li><a href="profile.php">Profile</a></li>
             <li><a href="SitinRules.php">Sit-in Rules</a></li>
-            <li><a href="Labrules&Regulations.php">Lab Rules & Regulations</a></li>
+            <li><a href="Labrules&Regulations.php">Lab Rules</a></li>
             <li><a href="announcements.php">Announcement</a></li>
             <li><a href="Reservation.php">Reservation</a></li>
-            <li><a href="SitinHistory.php">Sit-in History</a></li>
+            <li><a href="SitinHistory.php">History</a></li>
+            <li><a href="ViewSession.php">Session</a></li>
             <li><a href="logout.php">Logout</a></li>
         </ul>
     </div>

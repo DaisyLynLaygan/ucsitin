@@ -61,27 +61,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CCS Sit-in Monitoring Dashboard</title>
+    <title>Sit-in Rules</title>
     <style>
         body {
             display: flex;
             font-family: Arial, sans-serif;
-            background-color: whitesmoke;
             margin: 0;
-            overflow: hidden;
+            background-color: #f4f4f4;
         }
         .sidebar {
-                width: 250px;
-                background-color: purple;
-                color: white;
-                height: 100vh;
-                padding: 20px;
-                position: fixed; 
-                top: 0;
-                left: 0;
-                overflow-y: auto; 
-            }
-
+            width: 150px;
+            background-color: #6a0dad;
+            color: white;
+            height: 100vh;
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+        }
         .profile-section {
             text-align: center;
             margin-bottom: 20px;
@@ -91,15 +89,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             height: 80px;
             border-radius: 50%;
             border: 3px solid white;
-            cursor: pointer;
-        }
-        .hidden-input {
-            display: none;
         }
         .sidebar ul {
             list-style: none;
             padding: 0;
-            width: 100%;
         }
         .sidebar ul li {
             padding: 15px;
@@ -115,41 +108,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             background-color: rgba(255, 255, 255, 0.2);
         }
         .main-content {
+            margin-left: 270px;
             padding: 40px;
-            width: calc(100% - 270px); /* Adjusted for sidebar width */
+            width: calc(100% - 270px);
             display: flex;
             flex-direction: column;
-            align-items: center; /* Centers content horizontally */
-            justify-content: center; /* Centers content vertically */
-            min-height: 100vh; /* Ensures it takes the full viewport height */
-            margin-left: 270px; /* Pushes it to the right of the sidebar */
-}
-
-        .dashboard-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            width: 100%;
-            max-width: 900px;
+            align-items: center;
         }
-        .card {
+        .rules-container {
             background: white;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            text-align: center;
+            max-width: 800px;
+            width: 100%;
         }
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 200px;
-            }
-            .main-content {
-                margin-left: 220px;
-                width: calc(100% - 220px);
-            }
-            .dashboard-cards {
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            }
+        .rules-container h2, .rules-container h3 {
+            text-align: center;
+            color: #6a0dad;
+        }
+        .rules-container p {
+            line-height: 1.6;
         }
     </style>
 </head>
@@ -157,28 +136,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="sidebar">
         <div class="profile-section">
         <img src="<?php echo htmlspecialchars($userProfile['profile_picture'] ?? 'de.jpg'); ?>" alt="Profile Picture" class="profile-pic">
-            <p><?php echo htmlspecialchars($userProfile['firstname'] . " " . $userProfile['lastname']); ?></p>
+        <p><?php echo htmlspecialchars($userProfile['firstname'] . " " . $userProfile['lastname']); ?></p>
         </div>
         <ul>
             <li><a href="dashboard.php">Home</a></li>
             <li><a href="profile.php">Profile</a></li>
             <li><a href="SitinRules.php">Sit-in Rules</a></li>
-            <li><a href="Labrules&Regulations.php">Lab Rules & Regulations</a></li>
+            <li><a href="Labrules&Regulations.php">Lab Rules</a></li>
             <li><a href="announcements.php">Announcement</a></li>
             <li><a href="Reservation.php">Reservation</a></li>
-            <li><a href="SitinHistory.php">Sit-in History</a></li>
+            <li><a href="SitinHistory.php">History</a></li>
+            <li><a href="ViewSession.php">Session</a></li>
             <li><a href="logout.php">Logout</a></li>
         </ul>
     </div>
     <div class="main-content">
-<!-- Rules and Regulations -->
-<div class="card shadow-lg" style="max-width: 40rem;">
-<div class="card-header text-white text-center" style="background-color:#CDABEB;">
-<h5 class="mb-0">Sit-In Rules</h5>
-</div>
-<div class="card-body" style="max-height: 500px; overflow-y: auto;">
- <h5 class="text-center"><strong>University of Cebu</strong></h5>
-            <p class="mb-2 text-center"><strong>COLLEGE OF INFORMATION & COMPUTER STUDIES</strong></p>
+        <div class="rules-container">
+            <h2>Sit-In Rules</h2>
+            <h3>University of Cebu</h3>
+            <p><strong>COLLEGE OF INFORMATION & COMPUTER STUDIES</strong></p>
+            <p>To maintain order and discipline, please follow these guidelines:</p>
             <br>
             <p><strong>LABORATORY RULES AND REGULATIONS</strong></p>
             <p>To avoid embarrassment and maintain camaraderie with your friends and superiors at our laboratories, please observe the following:</p>
@@ -190,11 +167,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <p>6. Observe computer time usage carefully. A fifteen-minute allowance is given for each use. Otherwise, the unit will be given to those who wish to "sit-in".</p>
             <p>7. Observe proper decorum while inside the laboratory.</p>
             <ul>
-              <li>Do not get inside the lab unless the instructor is present.</li>
-              <li>All bags, knapsacks, and the likes must be deposited at the counter.</li>
-              <li>Follow the seating arrangement of your instructor.</li>
-              <li>At the end of class, all software programs must be closed.</li>
-              <li>Return all chairs to their proper places after using.</li>
+                <li>Maintain silence and proper decorum.</li>
+                <li>Games and unrelated activities are not allowed.</li>
+                <li>Internet usage requires instructor approval.</li>
+                <li>Unauthorized website access is prohibited.</li>
+                <li>Do not alter or delete files on the computers.</li>
+                <li>Follow computer time usage rules.</li>
+                <li>Observe proper behavior inside the lab.</li>
+                <li>No eating, drinking, or vandalism.</li>
             </ul>
             <p>8. Chewing gum, eating, drinking, smoking, and other forms of vandalism are prohibited inside the lab.</p>
             <p>9. Anyone causing a continual disturbance will be asked to leave the lab. Acts or gestures offensive to the members of the community, including public display of physical intimacy, are not tolerated.</p>
@@ -207,12 +187,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               <li>First Offense - The Head or the Dean or OIC recommends to the Guidance Center for a suspension from classes for each offender.</li>
               <li>Second and Subsequent Offenses - A recommendation for a heavier sanction will be endorsed to the Guidance Center.</li>
             </ul>
-</div>
-</div>
- 
-</div>
-        
+        </div>
     </div>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
 

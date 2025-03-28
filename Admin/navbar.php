@@ -15,22 +15,22 @@ include 'connection.php';
     <title>CCS Sit-in Monitoring Dashboard</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        body {
+       body {
             display: flex;
             font-family: Arial, sans-serif;
             background-color: whitesmoke;
             margin: 0;
         }
         .sidebar {
-            width: 250px;
-            background-color: purple;
+            width: 200px;
+            background-color: #6a0dad;
             color: white;
             height: 100vh;
             padding: 20px;
-            position: fixed; 
+            position: fixed;
             top: 0;
             left: 0;
-            overflow-y: auto; 
+            overflow-y: auto;
         }
         .profile-section {
             text-align: center;
@@ -41,17 +41,14 @@ include 'connection.php';
             height: 80px;
             border-radius: 50%;
             border: 3px solid white;
-            cursor: pointer;
         }
         .sidebar ul {
             list-style: none;
             padding: 0;
-            width: 100%;
         }
         .sidebar ul li {
             padding: 15px;
             text-align: center;
-            transition: background 0.3s;
         }
         .sidebar ul li a {
             color: white;
@@ -62,12 +59,17 @@ include 'connection.php';
             background-color: rgba(255, 255, 255, 0.2);
         }
         .main-content {
-            margin-left: 270px;
+            margin-left: 220px;
             padding: 40px;
-            width: calc(100% - 270px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            width: calc(100% - 220px);
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            margin: auto;
         }
         .dashboard-cards {
             display: grid;
@@ -83,7 +85,7 @@ include 'connection.php';
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
-        @media (max-width: 768px) {
+        @media (max-width: 768px) 
             .sidebar {
                 width: 200px;
             }
@@ -102,7 +104,7 @@ include 'connection.php';
             <li><a href="Announcement.php">Announcement</a></li>
             <li><a href="current-sitin.php">View current sit-in</a></li>
             <li><a href="sitinRecord.php">Sit-in Report</a></li>
-            <li><a href="feedback-report.php">Feedback Report</a></li>
+            <li><a href="FeedbackReport.php">Feedback Report</a></li>
             <li><a href="view-reservation.php">View Reservations</a></li>
             <li><a href="statistics.php">Statistics</a></li>
             <li><a href="daily-analytics.php">Daily Analytics</a></li>
