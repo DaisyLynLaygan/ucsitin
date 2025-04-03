@@ -22,7 +22,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #DAD2FF;
+            background-color:  #A854E2;
             background-image: url("OP.jpg");
         }
         .right {
@@ -96,7 +96,7 @@
 
         <form method="POST" style="background-color:whitesmoke;">
             <center>
-                <img src="../sitin/CCS LOGO.png" width="50%" height="auto"/>
+             <img src="../CCS LOGO.png" alt="CCS Logo"width="50%" height="auto"/>
             </center>
             <h1><b>Welcome To Sit-in Monitoring System</b></h1>
         </form>

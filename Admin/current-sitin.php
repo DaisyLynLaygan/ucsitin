@@ -60,7 +60,7 @@ $result = $conn->query($query);
             text-align: left;
         }
         th {
-            background-color: purple;
+            background-color: #6a0dad;
             color: white;
         }
         .no-data {
@@ -69,7 +69,7 @@ $result = $conn->query($query);
             margin-top: 20px;
         }
         .timeout-btn {
-            background-color: red;
+            background-color: green;
             color: white;
             padding: 5px 10px;
             border: none;

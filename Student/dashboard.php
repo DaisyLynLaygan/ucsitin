@@ -211,7 +211,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 datasets: [{
                     label: 'Sit-In Usage',
                     data: [10, 18, 7, 14, 9, 6],
-                    backgroundColor: ['red', 'blue', 'orange', 'teal', 'purple', 'gold']
+                    backgroundColor: ['#9286f4', '#be92f8', '#e8a6f9', '#fbcce8', '#be92f8','#dec3f9']
                 }]
             },
             options: {

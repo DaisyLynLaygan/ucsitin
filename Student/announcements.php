@@ -14,24 +14,27 @@ $result = $conn->query("SELECT * FROM announcements ORDER BY date_posted DESC");
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <style>
-    body {
+   body {
     display: flex;
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', sans-serif;
     margin: 0;
     background: #f4f4f4;
 }
 
 .sidebar {
-    width: 150px;
+    width: 220px;
     background: #6a0dad;
     color: white;
     height: 100vh;
-    padding: 20px;
+    padding: 25px 15px;
+    position: fixed;
+    top: 0;
+    left: 0;
 }
 
 .profile {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
 .profile img {
@@ -40,75 +43,85 @@ $result = $conn->query("SELECT * FROM announcements ORDER BY date_posted DESC");
     border-radius: 50%;
     background: white;
     padding: 5px;
+    object-fit: cover;
 }
 
-ul {
+.sidebar ul {
     list-style: none;
     padding: 0;
-}
-
-ul li {
-    padding: 12px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-}
-
-ul li i {
-    margin-right: 10px;
-}
-.sidebar ul li a {
-            color: white;
-            text-decoration: none;
-            flex: 1;
-}
-ul li.active, ul li:hover {
-    background: #5a0ca3;
-    border-radius: 5px;
-}
-
-.logout {
     margin-top: 20px;
-    color: #ff4b5c;
 }
 
-.content {
-    flex: 1;
-    padding: 20px;
-}
-
-h2 {
-    color: #333;
+.sidebar ul li {
     margin-bottom: 15px;
 }
 
-.announcement-container {
-    background: white;
-    padding: 15px;
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    display: block;
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s;
+}
+
+.sidebar ul li a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.content {
+    margin-left: 240px;
+    padding: 40px;
+    width: calc(100% - 240px);
+}
+
+h2 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.announcement-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 25px;
 }
 
 .announcement {
-    background: #f5f5f5;
-    padding: 10px;
-    border-left: 5px solid #6a0dad;
-    margin-bottom: 10px;
-    border-radius: 5px;
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s ease;
+    border-left: 6px solid #6a0dad;
+}
+
+.announcement:hover {
+    transform: translateY(-5px);
 }
 
 .timestamp {
-    font-size: 12px;
-    color: purple;
-    display: block;
+    font-size: 14px;
+    color: #999;
+    margin-bottom: 10px;
+}
+
+.announcement p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+    margin: 0 0 12px;
 }
 
 .author {
-    font-size: 12px;
-    color: #666;
-    float: right;
+    font-size: 14px;
+    color: #6a0dad;
+    text-align: right;
 }
-
 </style>
 <body>
     <div class="sidebar">

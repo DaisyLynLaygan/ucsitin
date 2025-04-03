@@ -63,73 +63,107 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sit-in Rules</title>
     <style>
-        body {
-            display: flex;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: #f4f4f4;
-        }
-        .sidebar {
-            width: 150px;
-            background-color: #6a0dad;
-            color: white;
-            height: 100vh;
-            padding: 20px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            overflow-y: auto;
-        }
-        .profile-section {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .profile-pic {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 3px solid white;
-        }
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
-        }
-        .sidebar ul li {
-            padding: 15px;
-            text-align: center;
-            transition: background 0.3s;
-        }
-        .sidebar ul li a {
-            color: white;
-            text-decoration: none;
-            display: block;
-        }
-        .sidebar ul li:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        .main-content {
-            margin-left: 270px;
-            padding: 40px;
-            width: calc(100% - 270px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .rules-container {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-            width: 100%;
-        }
-        .rules-container h2, .rules-container h3 {
-            text-align: center;
-            color: #6a0dad;
-        }
-        .rules-container p {
-            line-height: 1.6;
-        }
+       body {
+    display: flex;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    background: linear-gradient(to right, #f5f7fa, #e6e9f0);
+}
+
+.sidebar {
+    width: 150px;
+    background-color: #6a0dad;
+    color: white;
+    height: 100vh;
+    padding: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow-y: auto;
+}
+
+.profile-section {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.profile-pic {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid white;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    padding: 15px;
+    text-align: center;
+    transition: background 0.3s;
+}
+
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    display: block;
+}
+
+.sidebar ul li:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.main-content {
+    margin-left: 270px;
+    padding: 40px 20px;
+    width: calc(100% - 270px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f9f9f9;
+}
+
+.rules-container {
+    background: white;
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    max-width: 900px;
+    width: 100%;
+}
+
+.rules-container h2 {
+    font-size: 28px;
+    margin-bottom: 10px;
+    color: #6a0dad;
+    text-align: center;
+
+}
+
+.rules-container h3 {
+    font-size: 22px;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.rules-container p,
+.rules-container ul {
+    font-size: 16px;
+    color: #333;
+    line-height: 1.7;
+}
+
+.rules-container ul {
+    padding-left: 20px;
+    margin-top: 10px;
+}
+
+.rules-container ul li {
+    margin-bottom: 8px;
+}
+
     </style>
 </head>
 <body>

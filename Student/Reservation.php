@@ -78,148 +78,148 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCS Sit-in Monitoring Dashboard</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- FullCalendar CSS and JS -->
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css' rel='stylesheet' />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
     <style>
-        body {
-            display: flex;
-            font-family: Arial, sans-serif;
-            background-color: whitesmoke;
-            margin: 0;
-        }
-        .sidebar {
-                width: 150px;
-                background-color: #6a0dad;
-                color: white;
-                height: 100vh;
-                padding: 20px;
-                position: fixed; 
-                top: 0;
-                left: 0;
-                overflow-y: auto; 
-            }
+      body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f4f2fa;
+    display: flex;
+}
 
-        .profile-section {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .profile-pic {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 3px solid white;
-            cursor: pointer;
-        }
-        .hidden-input {
-            display: none;
-        }
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
-            width: 100%;
-        }
-        .sidebar ul li {
-            padding: 15px;
-            text-align: center;
-            transition: background 0.3s;
-        }
-        .sidebar ul li a {
-            color: white;
-            text-decoration: none;
-            display: block;
-        }
-        .sidebar ul li:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        .main-content {
-            margin-left: 270px;
-            padding: 40px;
-            width: calc(100% - 270px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .dashboard-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            width: 100%;
-            max-width: 900px;
-        }
-        .card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 200px;
-            }
-            .main-content {
-                margin-left: 220px;
-                width: calc(100% - 220px);
-            }
-            .dashboard-cards {
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            }
-        }
-         /* Global styles */
-         body {
-            font-family: Arial, sans-serif;
-            background-color: #f7f4f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            background: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
-            width: 100%;
-        }
-        h2 {
-            text-align: center;
-            color: #6d597a;
-        }
-        label {
-            display: block;
-            margin-top: 10px;
-            color: #5c5470;
-            font-weight: bold;
-        }
-        input, select, button {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #d3c0d2;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-        button {
-            background-color: #b5838d;
-            color: white;
-            border: none;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-        button:hover {
-            background-color: #6d597a;
-        }
-        .success-message {
-            text-align: center;
-            color: green;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        @media (max-width: 480px) {
-            .container {
-                padding: 20px;
-            }
-        }
+/* Sidebar */
+.sidebar {
+    width: 220px;
+    background-color: #6a0dad;
+    color: white;
+    padding: 20px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    overflow-y: auto;
+}
+
+.profile-section {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.profile-pic {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid white;
+    object-fit: cover;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+.sidebar ul li {
+    margin: 10px 0;
+}
+
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    padding: 10px;
+    display: block;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.sidebar ul li a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Main Layout */
+.main-content {
+    margin-left: 300px;
+    margin-right: 50px;
+    padding: 40px;
+    flex-grow: 1;
+    width: 100%;
+}
+
+h2 {
+    color: #5a2d82;
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+/* Grid layout for form and calendar */
+.reservation-layout {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 50px;
+}
+
+/* Form Card */
+.form-card {
+    background: white;
+    padding: 50px;
+    border-radius: 15px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+label {
+    font-weight: 600;
+    color: #5a2d82;
+    margin-bottom: 5px;
+}
+
+input, select {
+    width: 90%;
+    padding: 10px 12px;
+    font-size: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fafafa;
+    margin-bottom: 10px;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #a974d1;
+    background-color: #fff;
+    box-shadow: 0 0 5px rgba(106, 13, 173, 0.3);
+}
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #a974d1;
+    background-color: #fff;
+}
+/* Button */
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #a74ac7;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #883fbd;
+}
+
+.success-message {
+    color: green;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
     </style>
 </head>
 <body>
@@ -243,39 +243,71 @@ $conn->close();
             <li><a href="logout.php">Logout</a></li>
         </ul>
     </div>
-    <div class="container">
-        <h2>Lab Reservation</h2>
+<!-- Reservation Form -->
+<div class="main-content">
+    <h2 style="text-align: center; color: #5a2d82; font-weight: bold; margin-bottom: 30px;">Lab Reservation</h2>
+
+    <!-- Reservation Form Container -->
+    <div style="max-width: 950px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.08);">
         <?php if ($reservationSuccess): ?>
-            <p style="color: green;">Reservation successful!</p>
+            <p style="color: green; text-align: center; font-weight: bold;">Reservation successful!</p>
         <?php endif; ?>
+
         <form method="POST">
-            <label for="lab">Choose a Lab:</label>
-            <select name="lab" required>
-                <option value="524">Lab 524</option>
-                <option value="544">Lab 544</option>
-                <option value="530">Lab 530</option>
-                <option value="526">Lab 526</option>
-                <option value="542">Lab 542</option>
-                <option value="528">Lab 528</option>
-                <option value="517">Lab 517</option>
-            </select>
-            <label for="date">Date:</label>
-            <input type="date" name="date" required>
-            <label for="start_time">Start Time:</label>
-            <input type="time" name="start_time" required>
-            <label for="end_time">End Time:</label>
-            <input type="time" name="end_time" required>
-            <label for="language">Programming Language:</label>
-            <select name="language" required>
-                <option value="JavaScript">JavaScript</option>
-                <option value="Java">Java</option>
-                <option value="C#">C#</option>
-                <option value="Python">Python</option>
-                <option value="PHP">PHP</option>
-            </select>
-            <label for="reason">Purpose:</label>
-            <input type="text" name="reason" required>
-            <button type="submit" name="submitReserve">Reserve</button>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <label for="lab">Choose a Lab:</label>
+                    <select name="lab" required>
+                        <option value="">Select a Lab</option>
+                        <option value="524">Lab 524</option>
+                        <option value="544">Lab 544</option>
+                        <option value="530">Lab 530</option>
+                        <option value="526">Lab 526</option>
+                        <option value="542">Lab 542</option>
+                        <option value="528">Lab 528</option>
+                        <option value="517">Lab 517</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="date">Date:</label>
+                    <input type="date" name="date" required>
+                </div>
+
+                <div>
+                    <label for="start_time">Start Time:</label>
+                    <input type="time" name="start_time" required>
+                </div>
+
+                <div>
+                    <label for="end_time">End Time:</label>
+                    <input type="time" name="end_time" required>
+                </div>
+
+                <div>
+                    <label for="language">Programming Language:</label>
+                    <select name="language" required>
+                        <option value="">Select Language</option>
+                        <option value="JavaScript">JavaScript</option>
+                        <option value="Java">Java</option>
+                        <option value="C#">C#</option>
+                        <option value="Python">Python</option>
+                        <option value="PHP">PHP</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="reason">Purpose:</label>
+                    <input type="text" name="reason" required>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div style="margin-top: 30px; text-align: center;">
+                <button type="submit" name="submitReserve" style="padding: 12px 25px; font-size: 16px; background-color: #6a0dad; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                    Reserve
+                </button>
+            </div>
         </form>
     </div>
 </body>

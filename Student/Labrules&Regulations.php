@@ -134,7 +134,7 @@ $labRules = [
             text-align: center;
         }
         h1 {
-            color: purple;
+            color: #6a0dad;
             text-align: center;
         }
         ul {
@@ -144,7 +144,7 @@ $labRules = [
         li {
             margin: 10px 0;
             padding: 10px;
-            border-left: 5px solid purple;
+            border-left: 5px #6a0dad;
             text-align: center;
         }
         @media (max-width: 768px) {

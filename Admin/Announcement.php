@@ -60,7 +60,7 @@ $conn->close();
             border-radius: 5px;
         }
         .btn {
-            background-color: purple;
+            background-color: #6a0dad;
             color: white;
             padding: 10px;
             border: none;
