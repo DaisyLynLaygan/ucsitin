@@ -57,11 +57,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitReserve'])) {
     $end_time = $_POST['end_time'] ?? '';
     $reason = $_POST['reason'] ?? '';
     $language = $_POST['language'] ?? '';
+    $status = 'pending';
 
     if ($lab && $date && $start_time && $end_time && $reason && $language) {
-        $sql = "INSERT INTO reservations (user_id, lab, date, start_time, end_time, reason, language) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO reservations (user_id, lab, date, start_time, end_time, reason, language, status) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("issssss", $idno, $lab, $date, $start_time, $end_time, $reason, $language);
+        $stmt->bind_param("isssssss", $_SESSION['idno'], $lab, $date, $start_time, $end_time, $reason, $language, $status);
 
         if ($stmt->execute()) {
             $reservationSuccess = true;
@@ -69,6 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitReserve'])) {
         $stmt->close();
     }
 }
+
 $conn->close();
 ?>
 <!DOCTYPE html>
@@ -246,7 +249,25 @@ button:hover {
 <!-- Reservation Form -->
 <div class="main-content">
     <h2 style="text-align: center; color: #5a2d82; font-weight: bold; margin-bottom: 30px;">Lab Reservation</h2>
+    <div class="main-content">
+    <h2 style="text-align: center; color: #5a2d82; font-weight: bold; margin-bottom: 30px;">Lab Reservation</h2>
 
+    <?php
+    $msg = '';
+    $id = $_SESSION['idno'];
+    $check = $conn->query("SELECT status FROM reservations WHERE user_id = $id ORDER BY id DESC LIMIT 1");
+    if ($check && $check->num_rows > 0) {
+        $status = $check->fetch_assoc()['status'];
+        if ($status == 'approved') {
+            $msg = "Sit-in approved";
+        } elseif ($status == 'pending') {
+            $msg = "Reservation pending approval.";
+        }
+    }
+    if ($msg) {
+        echo "<p style='text-align:center; color: #5a2d82; font-weight:bold;'>$msg</p>";
+    }
+    ?>
     <!-- Reservation Form Container -->
     <div style="max-width: 950px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.08);">
         <?php if ($reservationSuccess): ?>
