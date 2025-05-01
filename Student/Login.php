@@ -1,8 +1,10 @@
-
 <?php
 session_start();
+if (isset($_SESSION['student_logged_in']) && $_SESSION['student_logged_in'] === true) {
+    header("Location: dashboard.php");
+    exit();
+}
 include './connection.php';
-
 
 // Handle login when form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
@@ -11,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
     $password = trim($_POST['password']);
 
     // Fetch user details using prepared statement
-    $stmt = $conn->prepare("SELECT idno, username, password FROM student WHERE username = ?");
+    $stmt = $conn->prepare("SELECT idno, username, password, profile_picture FROM student WHERE username = ?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -19,12 +21,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
     // Check if user exists
     if ($result->num_rows === 1) {
         $row = $result->fetch_assoc();
-        // Verify password
-        if ($password = $row["password"]) {
+        // Verify password (using password_verify)
+        if (password_verify($password, $row["password"])) {
             // Store user session
             $_SESSION['username'] = $row['username'];
             $_SESSION['idno'] = $row['idno'];
             $_SESSION['profile_picture'] = $row['profile_picture'];
+            $_SESSION['student_logged_in'] = true;
             // Redirect to dashboard
             header("Location: dashboard.php");
             exit();

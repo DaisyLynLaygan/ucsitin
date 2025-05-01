@@ -1,12 +1,12 @@
 <?php
 
 $host = "localhost";
-$username = "root";  // Default XAMPP MySQL username
-$password = "";      // Leave empty if no password is set in XAMPP
-$database = "sitin"; // Make sure this matches your database name
+$db_username = "root";  
+$password = "";    
+$database = "ucsitin";   
 
-// Establish connection
-$conn = new mysqli($host, $username, $password, $database);
+// Create connection
+$conn = new mysqli($host, $db_username, $password, $database);
 
 // Check connection
 if ($conn->connect_error) {

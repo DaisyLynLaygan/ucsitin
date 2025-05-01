@@ -1,6 +1,5 @@
 <?php
 include './connection.php'; // Database connection
-include 'navbar.php';
 
 // Handle timeout
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id'])) {
@@ -24,6 +23,8 @@ $query = "SELECT s.idno, s.firstname, s.lastname, si.purpose, si.laboratory, si.
           WHERE si.sit_out_time IS NULL
           ORDER BY si.sit_in_time DESC";
 $result = $conn->query($query);
+
+include 'navbar.php'; // Move it here, after all headers
 ?>
 
 <!DOCTYPE html>

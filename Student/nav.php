@@ -1,6 +1,6 @@
 <?php
 session_start();
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+if (!isset($_SESSION['student_logged_in']) || $_SESSION['student_logged_in'] !== true) {
     header("Location: login.php");
     exit();
 }
@@ -63,6 +63,12 @@ include 'connection.php';
         .sidebar ul li:hover {
             background-color: rgba(255, 255, 255, 0.2);
         }
+        .sidebar_logout:hover {
+            cursor: pointer;
+            background-color: red;
+            color: white; 
+            border-radius: 5px; 
+        }
         .main-content {
             margin-left: 220px;
             padding: 40px;
@@ -98,6 +104,59 @@ include 'connection.php';
                 margin-left: 220px;
                 width: calc(100% - 220px);
             }
+
+        /* Confirmation Modal Styles */      
+        #confirmationModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            width: 300px;
+        }
+
+        .modal-content button {
+            margin: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .modal-content button.confirm {
+            background-color: red;
+            color: white;
+        }
+
+        .modal-content button.cancel {
+            background-color: #ccc;
+        }
+
+        /* Smooth Fade-in for Modal */
+        #confirmationModal.show {
+            display: flex;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body>
@@ -114,7 +173,38 @@ include 'connection.php';
         <li><a href="announcements.php"><i class="fas fa-bullhorn"></i> Announcement</a></li>
         <li><a href="Reservation.php"><i class="fas fa-calendar-check"></i> Reservation</a></li>
         <li><a href="SitinHistory.php"><i class="fas fa-history"></i> Sit-in History</a></li>
-        <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        <li class="sidebar_logout"><a href="javascript:void(0);" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
      </ul>
     </div>
     <div class="main-content">
+    <div id="confirmationModal">
+            <div class="modal-content">
+                <h3>Are you sure you want to log out?</h3>
+                <button class="confirm" id="confirmLogout">Yes</button>
+                <button class="cancel" id="cancelLogout">No</button>
+            </div>
+        </div>
+
+    <script>
+        // Get the modal and buttons
+        const logoutBtn = document.getElementById('logoutBtn');
+        const confirmationModal = document.getElementById('confirmationModal');
+        const confirmLogout = document.getElementById('confirmLogout');
+        const cancelLogout = document.getElementById('cancelLogout');
+
+        // Show the modal when the logout button is clicked
+        logoutBtn.addEventListener('click', function (e) {
+            e.preventDefault();  // Prevent default link behavior (page reload)
+            confirmationModal.classList.add('show');
+        });
+
+        // Handle confirmation - Redirect to logout page if confirmed
+        confirmLogout.addEventListener('click', function () {
+            window.location.href = "logout.php"; // Redirect to logout page
+        });
+
+        // Close the modal without doing anything if canceled
+        cancelLogout.addEventListener('click', function () {
+            confirmationModal.classList.remove('show');
+        });
+    </script>

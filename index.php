@@ -60,7 +60,7 @@
         .btn {
             width: 100%;
             padding: 10px;
-            background: #007BFF;
+            background:rgb(136, 214, 253);
             border: none;
             color: white;
             cursor: pointer;
@@ -68,17 +68,42 @@
             font-size: 16px;
         }
         .btn:hover {
-            background: #0056b3;
+            background:rgb(0, 179, 90);
         }
 
-        /* Login Icon */
-        .login-icon {
+        /* Login Icon and Text */
+        .login-container {
             position: absolute;
             top: 20px;
             right: 20px;
-            width: 40px;
-            height: 40px;
+            display: flex;
+            align-items: center;
             cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 50px;
+            background-color: rgb(23, 219, 206);
+            transition: all 0.3s ease-in-out;
+        }
+        .login-container a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #0056b3;;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .login-container:hover {
+            background:rgb(24, 197, 185);
+            transform: scale(1.1);
+        }
+        .login-icon {
+            width: 30px;
+            height: 30px;
+            margin-left: 10px;
+            transition: all 0.3s ease-in-out;
+        }
+        .login-container:hover .login-icon {
+            transform: rotate(360deg);
         }
     </style>
 </head>
@@ -89,14 +114,16 @@
         <!-- Background Image -->
     </div>
     <div class="right">
-        <!-- Login Icon -->
-        <a href="login.php">
-            <img src="click.png" alt="Login" class="login-icon">
-        </a>
+        <!-- Login Icon beside the Login text at top-right corner -->
+        <div class="login-container">
+            <a href="./Student/login.php">
+                Login <img src="click.png" alt="Login" class="login-icon">
+            </a>
+        </div>
 
         <form method="POST" style="background-color:whitesmoke;">
             <center>
-             <img src="../CCS LOGO.png" alt="CCS Logo"width="50%" height="auto"/>
+             <img src="CCS LOGO.png" alt="CCS Logo" width="50%" height="auto"/>
             </center>
             <h1><b>Welcome To Sit-in Monitoring System</b></h1>
         </form>

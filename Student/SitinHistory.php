@@ -2,44 +2,98 @@
 session_start();
 include './connection.php';
 
-// Ensure user is logged in
 if (!isset($_SESSION['idno'])) {
     header("Location: login.php");
     exit;
 }
+$currentPage = basename($_SERVER['PHP_SELF']);
 $idno = $_SESSION['idno'];
-$firstname = $_SESSION['firstname'] ?? '';
-$lastname = $_SESSION['lastname'] ?? '';
-$profile_picture = $_SESSION['profile_picture'] ?? 'de.jpg';
 
-// Connect to the database
 $conn = new mysqli('localhost', 'root', '', 'sitin');
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Fetch sit-in history for the logged-in user
-$sql = "SELECT * FROM sit_in WHERE idno = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $idno);
-$stmt->execute();
-$result = $stmt->get_result();
-$listPerson = $result->fetch_all(MYSQLI_ASSOC);
-$stmt->close();
+// Fetch user data for profile 
+$sqlUser = "SELECT * FROM student WHERE idno = ?";
+$stmtUser = $conn->prepare($sqlUser);
+$stmtUser->bind_param("i", $idno);
+$stmtUser->execute();
+$userResult = $stmtUser->get_result();
+$userData = $userResult->fetch_assoc(); // Fetch the user data
+$firstname = $userData['firstname'] ?? '';
+$middlename = $userData['middlename'] ?? '';
+$lastname = $userData['lastname'] ?? '';
+$profile_picture = $userData['profile_picture'] ?? ''; // Fallback to default image if not found
+
+// Fetch sit-in history with feedback data (this query retrieves multiple rows)
+$sqlSitInHistory = "SELECT s.*, f.feedback AS feedback_text 
+                    FROM sit_in s 
+                    LEFT JOIN feedback f ON s.id = f.sit_in_id 
+                    WHERE s.idno = ?";
+$stmtSitInHistory = $conn->prepare($sqlSitInHistory);
+$stmtSitInHistory->bind_param("i", $idno);
+$stmtSitInHistory->execute();
+$historyResult = $stmtSitInHistory->get_result();
+$listPerson = $historyResult->fetch_all(MYSQLI_ASSOC); // Fetch the sit-in history
+
+// Clean up
+$stmtUser->close();
+$stmtSitInHistory->close();
 $conn->close();
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CCS Sit-in Monitoring Dashboard</title>
+    <title>Sit-in History with Feedback</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script>
-        function openFeedbackModal(sitinId) {
+        function formatDate(date) {
+            if (!date) return ''; // Return empty if date is not provided
+
+            const options = { 
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit', 
+                hour12: true 
+            };
+
+            // Create a new Date object from the given date string
+            const dateObj = new Date(date);
+            
+            // Format the date using toLocaleString and options
+            return dateObj.toLocaleString('en-US', options).replace(',', ' at');
+        }
+
+        function openFeedbackModal(sitinId, lab, purpose, login, logout, feedback = '') {
             document.getElementById("currentSitinId").value = sitinId;
+            document.getElementById("labDetail").innerText = lab;
+            document.getElementById("purposeDetail").innerText = purpose;
+            document.getElementById("loginDetail").innerText = formatDate(login);
+            document.getElementById("logoutDetail").innerText = formatDate(logout);
+
+            const inputArea = document.getElementById("feedbackInputSection");
+            const viewArea = document.getElementById("feedbackViewSection");
+            const feedbackTextArea = document.getElementById("feedbackText");
+            const errorMsg = document.getElementById("errorMsg");
+
+            if (feedback !== '') {
+                viewArea.style.display = "block";
+                inputArea.style.display = "none";
+                document.getElementById("feedbackDisplay").innerText = feedback;
+            } else {
+                inputArea.style.display = "block";
+                viewArea.style.display = "none";
+                feedbackTextArea.value = '';
+            }
+
+            errorMsg.innerText = '';
             document.getElementById("feedbackModal").style.display = "block";
         }
 
@@ -48,63 +102,42 @@ $conn->close();
         }
 
         function submitFeedback() {
-            let feedback = document.getElementById("feedbackText").value;
-            let sitinId = document.getElementById("currentSitinId").value;
+            const feedback = document.getElementById("feedbackText").value.trim();
+            const sitinId = document.getElementById("currentSitinId").value;
+            const errorMsg = document.getElementById("errorMsg");
 
-            if (feedback.trim() === "") {
-                alert("Feedback cannot be empty.");
-                return;
-            }
-
-            if (!confirm("Are you sure you want to submit this feedback?")) {
+            if (feedback === "") {
+                errorMsg.innerText = "Feedback cannot be empty.";
                 return;
             }
 
             let xhr = new XMLHttpRequest();
-            xhr.open("POST", "submit_feedback.php", true);
+            xhr.open("POST", "submitfeedback.php", true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4 && xhr.status === 200) {
                     if (xhr.responseText.trim() === "success") {
-                        showToast("Feedback successfully submitted");
                         closeFeedbackModal();
-                        setTimeout(() => location.reload(), 1500);
+                        alert("Feedback submitted successfully.");
+                        location.reload();  // Refresh the page to see the updated data
                     } else {
                         alert("Error submitting feedback.");
                     }
                 }
             };
-            xhr.send("feedback=" + encodeURIComponent(feedback) + "&idno=<?php echo $idno; ?>" + "&sitin_id=" + sitinId);
+
+            // Send feedback and sitinId to PHP script
+            xhr.send("feedback=" + encodeURIComponent(feedback) + "&sitin_id=" + sitinId);
         }
 
         window.onclick = function(event) {
-            let modal = document.getElementById("feedbackModal");
+            const modal = document.getElementById("feedbackModal");
             if (event.target === modal) {
                 closeFeedbackModal();
             }
         };
-
-        function showToast(message) {
-            const toast = document.createElement("div");
-            toast.textContent = message;
-            toast.style.position = "fixed";
-            toast.style.bottom = "20px";
-            toast.style.left = "50%";
-            toast.style.transform = "translateX(-50%)";
-            toast.style.backgroundColor = "#6a0dad";
-            toast.style.color = "#fff";
-            toast.style.padding = "10px 20px";
-            toast.style.borderRadius = "8px";
-            toast.style.boxShadow = "0 4px 8px rgba(0,0,0,0.1)";
-            toast.style.zIndex = "9999";
-            document.body.appendChild(toast);
-            setTimeout(() => {
-                toast.remove();
-            }, 2000);
-        }
     </script>
-</head>
-<style>
+    <style>
         body {
             display: flex;
             font-family: Arial, sans-serif;
@@ -148,157 +181,185 @@ $conn->close();
         .sidebar ul li:hover {
             background-color: rgba(255, 255, 255, 0.2);
         }
-        .main-content {
-            margin-left: 220px;
-            padding: 40px;
-            width: calc(100% - 220px);
+        .sidebar ul li.active {
+            background-color: rgba(255, 255, 255, 0.3);
+            border-left: 5px solid white;
         }
-        .container {
+        .sidebar ul li.active a {
+            font-weight: bold;
+            color: #fff;
+        }
+        .main-content { margin-left: 220px; padding: 40px; width: calc(100% - 220px); }
+        .container { background: white; padding: 30px; border-radius: 10px; max-width: 900px; margin: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .table-container { overflow-x: auto; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; }
+        thead { background: #6a0dad; color: white; }
+        th, td { padding: 12px; text-align: center; border-bottom: 1px solid #ddd; }
+        .feedback-btn { background: #673ab7; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; }
+        .feedback-btn:hover { background: #512da8; }
+        .feedback-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
             background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 900px;
-            margin: auto;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            width: 400px;
         }
-        .table-container {
-            overflow-x: auto;
-            margin-top: 10px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        thead {
-            background: #6a0dad;
-            color: white;
-        }
-        th, td {
-            padding: 12px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-        }
-        tbody tr:hover {
-            background-color: #f0e6fa;
-        }
-        .no-data {
-            text-align: center;
-            padding: 15px;
-            color: #888;
-        }
-        .feedback-btn {
-            background: #673ab7;
-            color: white;
+        .feedback-modal h2 { margin-top: 0; }
+        .feedback-modal .detail { margin-bottom: 5px; font-size: 14px; }
+        .feedback-modal textarea { width: 100%; height: 80px; margin-top: 10px; }
+        .feedback-modal button { margin-top: 10px; margin-right: 10px; }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: transparent;
             border: none;
-            padding: 8px 12px;
-            border-radius: 5px;
+            font-size: 30px;
+            color: #000;
             cursor: pointer;
         }
-        .feedback-btn:hover {
-            background: #512da8;
+        .close-btn:hover {
+            color: red;
         }
-    .feedback-container {
-        position: absolute;
-        top: 90px;
-        right: 240px;
-    }
-    .feedback-modal {
-        display: none;
-        position: fixed;
-        z-index: 1200;
-        left: 60%;
-        top: 40%;
-        transform: translate(-50%, -50%);
-        background: white;
-        padding: 20px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        border-radius: 10px;
-    }
-    .feedback-modal textarea {
-        width: 100%;
-        height: 100px;
-        margin-top: 10px;
-    }
-    .feedback-modal button {
-        margin-top: 10px;
-        color: #673ab7;
-    }
-</style>
-
+        .error-msg { color: red; font-size: 13px; margin-top: 5px; }
+    </style>
+</head>
 <body>
-<div class="sidebar">
-    <div class="profile-section">
-        <img src="<?php echo htmlspecialchars($profile_picture); ?>" alt="Profile Picture" class="profile-pic">
-        <p><?php echo htmlspecialchars($firstname . " " . $lastname); ?></p>
+    <div class="sidebar">
+        <div class="profile-section">
+            <?php if (empty($profile_picture)) { ?>
+                <!-- Use Font Awesome Icon when profile picture is not available -->
+                <i class="fas fa-user-circle fa-4x"></i>
+            <?php } else { ?>
+                <img src="<?php echo htmlspecialchars($profile_picture); ?>" alt="Profile Picture" class="profile-pic">
+            <?php } ?>
+            
+            <p>
+                <?php 
+                // Ensure names are not empty and handle middle name (first letter only)
+                $full_name = !empty($firstname) && !empty($lastname) 
+                            ? $firstname . " " . (empty($middlename) ? "" : ucfirst(strtolower($middlename[0])) . ". ") . $lastname 
+                            : "Person";
+                
+                // Capitalize the first letter of each name (First and Last names)
+                echo htmlspecialchars(ucwords(strtolower($full_name)));
+                ?>
+            </p>
+        </div>
+        <ul>
+            <li class="<?= $currentPage == 'dashboard.php' ? 'active' : '' ?>"><a href="dashboard.php">Home</a></li>
+            <li class="<?= $currentPage == 'profile.php' ? 'active' : '' ?>"><a href="profile.php">Edit Profile</a></li>
+            <li class="<?= $currentPage == 'announcements.php' ? 'active' : '' ?>"><a href="announcements.php">Announcement</a></li>
+            <li class="<?= $currentPage == 'SitinRules.php' ? 'active' : '' ?>"><a href="SitinRules.php">Sit-in Rules</a></li>
+            <li class="<?= $currentPage == 'Labrules&Regulations.php' ? 'active' : '' ?>"><a href="Labrules&Regulations.php">Lab Rules</a></li>
+            <li class="<?= $currentPage == 'Reservation.php' ? 'active' : '' ?>"><a href="Reservation.php">Reservation</a></li>
+            <li class="<?= $currentPage == 'SitinHistory.php' ? 'active' : '' ?>"><a href="SitinHistory.php">Sit-in History</a></li>
+            <li class="<?= $currentPage == 'LabResource.php' ? 'active' : '' ?>"><a href="LabResource.php">View Lab Resource</a></li>
+            <li class="<?= $currentPage == 'ViewSession.php' ? 'active' : '' ?>"><a href="ViewSession.php">Session</a></li>
+            <li class="<?= $currentPage == 'Leaderboard.php' ? 'active' : '' ?>"><a href="Leaderboard.php">Leaderboard</a></li>
+            <li class="<?= $currentPage == 'LabSchedule.php' ? 'active' : '' ?>"><a href="LabSchedule.php">Lab Schedule</a></li>
+            <li><a href="logout.php">Logout</a></li>
+        </ul>
     </div>
-    <ul>
-        <li><a href="dashboard.php">Home</a></li>
-        <li><a href="profile.php">Profile</a></li>
-        <li><a href="SitinRules.php">Sit-in Rules</a></li>
-        <li><a href="Labrules&Regulations.php">Lab Rules</a></li>
-        <li><a href="announcements.php">Announcement</a></li>
-        <li><a href="Reservation.php">Reservation</a></li>
-        <li><a href="SitinHistory.php">History</a></li>
-        <li><a href="ViewSession.php">Session</a></li>
-        <li><a href="logout.php">Logout</a></li>
-    </ul>
-</div>
 
-<!-- Feedback Modal -->
-<div class="feedback-modal" id="feedbackModal">
-    <h2>Submit Feedback</h2>
-    <input type="hidden" id="currentSitinId" value="">
-    <textarea id="feedbackText" placeholder="Write your feedback here..."></textarea>
-    <button type="button" onclick="submitFeedback()">Submit</button>
-    <button type="button" onclick="closeFeedbackModal()">Cancel</button>
-</div>
+    <!-- Feedback Modal -->
+    <div class="feedback-modal" id="feedbackModal">
+        <!-- Close button in top-right of modal -->
+        <button onclick="closeFeedbackModal()" class="close-btn">&times;</button>
 
-<div class="main-content">
-    <div class="container">
-        <h1 class="title">Sit-in History</h1>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID No.</th>
-                        <th>Name</th>
-                        <th>Sit Purpose</th>
-                        <th>Laboratory</th>
-                        <th>Login</th>
-                        <th>Logout</th>
-                        <th>Date</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (!empty($listPerson)) : ?>
-                        <?php foreach ($listPerson as $person) : ?>
-                            <tr <?php echo (!empty($person['feedback_status']) && $person['feedback_status'] === 'Submitted') ? 'style="background-color:#e6ffe6"' : ''; ?>>
-                                <td><?php echo htmlspecialchars($person['idno']); ?></td>
-                                <td><?php echo htmlspecialchars($firstname . " " . $lastname); ?></td>
-                                <td><?php echo htmlspecialchars($person['purpose'] ?? ''); ?></td>
-                                <td><?php echo htmlspecialchars($person['laboratory'] ?? ''); ?></td>
-                                <td><?php echo htmlspecialchars($person['TimeIn'] ?? ''); ?></td>
-                                <td><?php echo htmlspecialchars($person['Timeout'] ?? ''); ?></td>
-                                <td><?php echo htmlspecialchars(date('M d, Y', strtotime($person['date']))); ?></td>
-                                <td>
-                                    <?php if (!empty($person['Timeout']) && (!isset($person['feedback_status']) || $person['feedback_status'] !== 'Submitted')) : ?>
-                                        <button class="feedback-btn" onclick="openFeedbackModal(<?php echo $person['sitin_id']; ?>)">Feedback</button>
-                                    <?php else : ?>
-                                        <button class="feedback-btn" disabled>Submitted</button>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php else : ?>
-                        <tr>
-                            <td colspan="8" class="no-data" style="text-align: center;">No history available</td>
-                        </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
+        <h2>Feedback</h2>
+        <input type="hidden" id="currentSitinId">
+        <div class="detail"><strong>Laboratory:</strong> <span id="labDetail"></span></div>
+        <div class="detail"><strong>Purpose:</strong> <span id="purposeDetail"></span></div>
+        <div class="detail"><strong>Sit-in Time:</strong> <span id="loginDetail"></span></div>
+        <div class="detail"><strong>Sit-out Time:</strong> <span id="logoutDetail"></span></div>
+
+        <div id="feedbackViewSection" style="margin-top: 15px;">
+            <strong>Feedback Given:</strong>
+            <p id="feedbackDisplay" style="white-space: pre-wrap;"></p>
+        </div>
+
+        <div id="feedbackInputSection">
+            <textarea id="feedbackText" placeholder="Write your feedback here..."></textarea>
+            <div class="error-msg" id="errorMsg"></div>
+            <button onclick="submitFeedback()">Submit</button>
+            <button onclick="closeFeedbackModal()">Cancel</button>
         </div>
     </div>
-</div>
+
+    <div class="main-content">
+        <div class="container">
+            <h1>Sit-in History</h1>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Laboratory</th>
+                            <th>Purpose</th>
+                            <th>Login</th>
+                            <th>Logout</th>
+                            <th>Feedback</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (!empty($listPerson) && count($listPerson) > 0) : ?>
+                            <?php foreach ($listPerson as $person) : ?>
+                                <?php
+                                // Function to format the date
+                                function formatDate($date) {
+                                    if (empty($date)) {
+                                        return ''; // Return an empty string if no date is provided
+                                    }
+                                    
+                                    try {
+                                        $datetime = new DateTime($date); // Create a DateTime object from the given date
+                                        return $datetime->format('m/d/Y \a\t h:i A'); // Format the date in MM/DD/YYYY at HH:MM AM/PM
+                                    } catch (Exception $e) {
+                                        return ''; // Return an empty string if the date is invalid
+                                    }
+                                }
+                                ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($person['laboratory'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($person['purpose'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars(formatDate($person['sitin_time'] ?? '')) ?></td>
+                                    <td><?= htmlspecialchars(formatDate($person['sit_out_time'] ?? '')) ?></td>
+                                    <td>
+                                        <?php if (!empty($person['feedback_text'])) : ?>
+                                            <button class="feedback-btn" onclick="openFeedbackModal(
+                                                <?= $person['id'] ?>,
+                                                '<?= addslashes($person['laboratory']) ?>',
+                                                '<?= addslashes($person['purpose']) ?>',
+                                                '<?= $person['sitin_time'] ?>',
+                                                '<?= $person['sit_out_time'] ?>',
+                                                `<?= addslashes($person['feedback_text']) ?>`
+                                            )">View Feedback</button>
+                                        <?php elseif (!empty($person['sit_out_time'])) : ?>
+                                            <button class="feedback-btn" onclick="openFeedbackModal(
+                                                <?= $person['id'] ?>,
+                                                '<?= addslashes($person['laboratory']) ?>',
+                                                '<?= addslashes($person['purpose']) ?>',
+                                                '<?= $person['sitin_time'] ?>',
+                                                '<?= $person['sit_out_time'] ?>'
+                                            )">Give Feedback</button>
+                                        <?php else : ?>
+                                            <button class="feedback-btn" disabled>Pending</button>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else : ?>
+                            <tr><td colspan="5">No sit-in history found.</td></tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

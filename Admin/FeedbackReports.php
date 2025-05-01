@@ -15,11 +15,13 @@ function containsFoulWords($text) {
 
 // Fetch feedbacks with student info
 $sql = "SELECT s.idno, s.firstname, s.course, si.laboratory, si.purpose, si.sit_in_time, si.sit_out_time, 
-               DATE(si.sit_in_time) AS feedback_date, si.feedback 
+               f.feedback_date, f.feedback 
         FROM sit_in si
         JOIN student s ON s.idno = si.idno
-        WHERE si.feedback IS NOT NULL
-        ORDER BY si.sit_in_time DESC";
+        JOIN feedback f ON f.sit_in_id = si.id
+        WHERE si.sit_out_time IS NOT NULL
+        AND f.feedback IS NOT NULL
+        ORDER BY f.feedback_date DESC";
 
 $result = $conn->query($sql);
 if (!$result) {

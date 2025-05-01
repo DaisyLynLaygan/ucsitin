@@ -1,6 +1,10 @@
 
 <?php
 session_start();
+if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
+    header("Location: dashboard.php");
+    exit();
+}
 include 'connection.php'; // Ensure database connection
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -24,10 +28,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Location: dashboard.php");
             exit();
         } else {
-            echo "<script>alert('Invalid password'); window.location='index.php';</script>";
+            echo "<script>alert('Invalid password'); window.location='login.php';</script>";
         }
     } else {
-        echo "<script>alert('Invalid username'); window.location='index.php';</script>";
+        echo "<script>alert('Invalid username'); window.location='login.php';</script>";
     }
     
     $stmt->close();
@@ -162,7 +166,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
     <div class="right">
         <div class="login-box">
-            <h1>Welcome To Sit-in!</h1>
+            <h1>Welcome To Sit-in Admin!</h1>
             <form method="POST">
                 <div class="input-group">
                     <label for="username">Username:</label>
