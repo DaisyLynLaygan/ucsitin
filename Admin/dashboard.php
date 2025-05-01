@@ -1,5 +1,6 @@
 <?php include 'navbar.php'; ?>
 
+<<<<<<< HEAD
 <h1 style="font-size: 26px; font-weight: 600; margin-bottom: 30px; color: #2c3e50;">Welcome to CCS Sit-in Monitoring</h1>
 
 <style>
@@ -122,7 +123,28 @@ const labChart = new Chart(ctx2, {
     }
 });
 </script>
+=======
+        <h1>Welcome to CCS Sit-in Monitoring</h1>
+
+        
+        <div class="dashboard-cards">
+
+            <div class="card">
+                <h3>Active Reservations</h3>
+                <p>5</p>
+            </div>
+            <div class="card">
+                <h3>Completed Sessions</h3>
+                <p>10</p>
+            </div>
+        </div>
+    </div>
+>>>>>>> 611347cb0330f243f87d23d32877186abb3261f1
 
 </div> <!-- Closing main-content -->
 </body>
 </html>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 611347cb0330f243f87d23d32877186abb3261f1

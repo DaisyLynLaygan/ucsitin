@@ -18,6 +18,7 @@ $result = $conn->query($query);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Timed-Out Sit-in Records</title>
     <link rel="stylesheet" href="styles.css">
+<<<<<<< HEAD
 
     <!-- ✅ DataTables CSS & JS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
@@ -186,3 +187,39 @@ $result = $conn->query($query);
 </body>
 </html>
 
+=======
+</head>
+<body>
+    <div class="container">
+        <h2>Timed-Out Sit-in Records</h2>
+
+        <?php if ($result->num_rows > 0): ?>
+            <table>
+                <tr>
+                    <th>ID No.</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Purpose</th>
+                    <th>Laboratory</th>
+                    <th>Sit-in Time</th>
+                    <th>Timeout Time</th>
+                </tr>
+                <?php while ($row = $result->fetch_assoc()): ?>
+                    <tr>
+                        <td><?php echo $row['idno']; ?></td>
+                        <td><?php echo $row['firstname']; ?></td>
+                        <td><?php echo $row['lastname']; ?></td>
+                        <td><?php echo $row['purpose']; ?></td>
+                        <td><?php echo $row['laboratory']; ?></td>
+                        <td><?php echo $row['sit_in_time']; ?></td>
+                        <td><?php echo $row['sit_out_time']; ?></td>
+                    </tr>
+                <?php endwhile; ?>
+            </table>
+        <?php else: ?>
+            <p class="no-data">No timed-out records available.</p>
+        <?php endif; ?>
+    </div>
+</body>
+</html>
+>>>>>>> 611347cb0330f243f87d23d32877186abb3261f1

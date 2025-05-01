@@ -10,7 +10,11 @@ if (!isset($_SESSION['admin_username'])) {
 }
 
 // Fetch all students from the database
+<<<<<<< HEAD
 $sql = "SELECT idno, lastname, firstname, middlename, course, year, email, username, session_no FROM student";
+=======
+$sql = "SELECT idno, lastname, firstname, middlename, course, year, email, username FROM student";
+>>>>>>> 611347cb0330f243f87d23d32877186abb3261f1
 $result = $conn->query($sql);
 ?>
     <style>
@@ -44,6 +48,7 @@ $result = $conn->query($sql);
         }
     </style>
         <h2>List of Registered Students</h2>
+<<<<<<< HEAD
 
         <div class="filter-bar" style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0;">
             <div style="display: flex; gap: 10px; align-items: center;">
@@ -70,6 +75,8 @@ $result = $conn->query($sql);
             <input type="text" id="searchInput" placeholder="Search..." style="padding: 5px; width: 250px;">
         </div>
 
+=======
+>>>>>>> 611347cb0330f243f87d23d32877186abb3261f1
         <table>
             <thead>
                 <tr>
@@ -81,6 +88,7 @@ $result = $conn->query($sql);
                     <th>Year</th>
                     <th>Email</th>
                     <th>Username</th>
+<<<<<<< HEAD
                     <th>Session No.</th>
                 </tr>
             </thead>
@@ -111,11 +119,27 @@ $result = $conn->query($sql);
                     <td><?php echo htmlspecialchars($row['email']); ?></td>
                     <td><?php echo htmlspecialchars($row['username']); ?></td>
                     <td><?php echo htmlspecialchars($row['session_no']); ?></td>
+=======
+                </tr>
+            </thead>
+            <tbody>
+                <?php while ($row = $result->fetch_assoc()): ?>
+                <tr>
+                    <td><?php echo htmlspecialchars($row['idno']); ?></td>
+                    <td><?php echo htmlspecialchars($row['lastname']); ?></td>
+                    <td><?php echo htmlspecialchars($row['firstname']); ?></td>
+                    <td><?php echo htmlspecialchars($row['middlename']); ?></td>
+                    <td><?php echo htmlspecialchars($row['course']); ?></td>
+                    <td><?php echo htmlspecialchars($row['year']); ?></td>
+                    <td><?php echo htmlspecialchars($row['email']); ?></td>
+                    <td><?php echo htmlspecialchars($row['username']); ?></td>
+>>>>>>> 611347cb0330f243f87d23d32877186abb3261f1
                 </tr>
                 <?php endwhile; ?>
             </tbody>
         </table>
         </div> <!-- Closing main-content -->
+<<<<<<< HEAD
 
         <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -151,6 +175,8 @@ $result = $conn->query($sql);
             filterYear.addEventListener('change', filterTable);
         });
         </script>
+=======
+>>>>>>> 611347cb0330f243f87d23d32877186abb3261f1
 </body>
 </html>
 

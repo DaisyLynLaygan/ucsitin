@@ -1,13 +1,21 @@
 <?php
+<<<<<<< HEAD
 // Start session and check if admin is logged in
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+=======
+session_start();
+>>>>>>> 611347cb0330f243f87d23d32877186abb3261f1
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
     header("Location: login.php");
     exit();
 }
+<<<<<<< HEAD
 include 'connection.php';
+=======
+include 'connection.php'; 
+>>>>>>> 611347cb0330f243f87d23d32877186abb3261f1
 ?>
 
 <!DOCTYPE html>
@@ -17,15 +25,21 @@ include 'connection.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCS Sit-in Monitoring Dashboard</title>
     <link rel="stylesheet" href="styles.css">
+<<<<<<< HEAD
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
        body {
+=======
+    <style>
+        body {
+>>>>>>> 611347cb0330f243f87d23d32877186abb3261f1
             display: flex;
             font-family: Arial, sans-serif;
             background-color: whitesmoke;
             margin: 0;
         }
         .sidebar {
+<<<<<<< HEAD
             width: 200px;
             background-color: #6a0dad;
             color: white;
@@ -40,6 +54,18 @@ include 'connection.php';
                 margin-right: 8px;
              }
 
+=======
+            width: 250px;
+            background-color: purple;
+            color: white;
+            height: 100vh;
+            padding: 20px;
+            position: fixed; 
+            top: 0;
+            left: 0;
+            overflow-y: auto; 
+        }
+>>>>>>> 611347cb0330f243f87d23d32877186abb3261f1
         .profile-section {
             text-align: center;
             margin-bottom: 20px;
@@ -49,10 +75,15 @@ include 'connection.php';
             height: 80px;
             border-radius: 50%;
             border: 3px solid white;
+<<<<<<< HEAD
+=======
+            cursor: pointer;
+>>>>>>> 611347cb0330f243f87d23d32877186abb3261f1
         }
         .sidebar ul {
             list-style: none;
             padding: 0;
+<<<<<<< HEAD
             margin: 0;
         }
 
@@ -108,6 +139,30 @@ include 'connection.php';
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             max-width: 900px;
             margin: auto;
+=======
+            width: 100%;
+        }
+        .sidebar ul li {
+            padding: 15px;
+            text-align: center;
+            transition: background 0.3s;
+        }
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            display: block;
+        }
+        .sidebar ul li:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .main-content {
+            margin-left: 270px;
+            padding: 40px;
+            width: calc(100% - 270px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+>>>>>>> 611347cb0330f243f87d23d32877186abb3261f1
         }
         .dashboard-cards {
             display: grid;
@@ -123,7 +178,11 @@ include 'connection.php';
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
+<<<<<<< HEAD
         @media (max-width: 768px) 
+=======
+        @media (max-width: 768px) {
+>>>>>>> 611347cb0330f243f87d23d32877186abb3261f1
             .sidebar {
                 width: 200px;
             }
@@ -131,6 +190,7 @@ include 'connection.php';
                 margin-left: 220px;
                 width: calc(100% - 220px);
             }
+<<<<<<< HEAD
 
         /* Confirmation Modal Styles */      
         #confirmationModal {
@@ -240,3 +300,24 @@ include 'connection.php';
             confirmationModal.classList.remove('show');
         });
     </script>
+=======
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <ul>
+            <li><a href="dashboard.php">Home</a></li>
+            <li><a href="Search.php">Search</a></li>
+            <li><a href="ListofStudents.php">List of students</a></li>
+            <li><a href="Announcement.php">Announcement</a></li>
+            <li><a href="current-sitin.php">View current sit-in</a></li>
+            <li><a href="sitinRecord.php">Sit-in Report</a></li>
+            <li><a href="feedback-report.php">Feedback Report</a></li>
+            <li><a href="view-reservation.php">View Reservations</a></li>
+            <li><a href="statistics.php">Statistics</a></li>
+            <li><a href="daily-analytics.php">Daily Analytics</a></li>
+            <li><a href="logout.php">Logout</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+>>>>>>> 611347cb0330f243f87d23d32877186abb3261f1

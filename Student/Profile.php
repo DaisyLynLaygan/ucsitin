@@ -2,7 +2,10 @@
 session_start();
 include './connection.php'; // Database connection
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 611347cb0330f243f87d23d32877186abb3261f1
 // Ensure the user is logged in
 if (!isset($_SESSION['username'])) {
     header("Location: login.php");
@@ -67,6 +70,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $_SESSION['year'] = $year;
     $_SESSION['email'] = $email;
     
+<<<<<<< HEAD
     $fetch_profile = $conn->prepare("SELECT idno, firstname, lastname, middlename, course, year, email, username, profile_picture FROM student WHERE username = ?");
     $fetch_profile->bind_param("s", $username);
     $fetch_profile->execute();
@@ -74,6 +78,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $userProfile = $result->fetch_assoc();
     
 }
+=======
+    // Fetch the updated data from the database
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $userProfile = $result->fetch_assoc();
+}
+
+>>>>>>> 611347cb0330f243f87d23d32877186abb3261f1
 // Close the database connection
 $conn->close();
 ?>
@@ -87,6 +99,7 @@ $conn->close();
     <title>Profile - CCS Sit-in Monitoring</title>
     <link rel="stylesheet" href="styles.css">
     <style>
+<<<<<<< HEAD
     body {
         font-family: 'Segoe UI', sans-serif;
         background: linear-gradient(to right, #f5f7fa, #f0f4fc);
@@ -228,6 +241,77 @@ $conn->close();
         }
     }
  </style>
+=======
+        body {
+            display: flex;
+            font-family: Arial, sans-serif;
+            background-color: whitesmoke;
+            margin: 0;
+        }
+        .sidebar {
+                width: 250px;
+                background-color: purple;
+                color: white;
+                height: 100vh;
+                padding: 20px;
+                position: fixed; 
+                top: 0;
+                left: 0;
+                overflow-y: auto; 
+            }
+
+        .profile-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .profile-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid white;
+            cursor: pointer;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            width: 100%;
+        }
+        .sidebar ul li {
+            padding: 15px;
+            text-align: center;
+            transition: background 0.3s;
+        }
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            display: block;
+        }
+        .sidebar ul li:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .main-content {
+            margin-left: 270px;
+            padding: 30px;
+            width: calc(100% - 270px);
+        }
+        .profile-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: auto;
+        }
+        .profile-container h2 {
+            text-align: center;
+        }
+        .profile-container input, .profile-container select, .profile-container button {
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+        }
+    </style>
+>>>>>>> 611347cb0330f243f87d23d32877186abb3261f1
 </head>
 <body>
     <div class="sidebar">
@@ -236,6 +320,7 @@ $conn->close();
             <p><?php echo htmlspecialchars($userProfile['firstname'] . " " . $userProfile['lastname']); ?></p>
         </div>
         <ul>
+<<<<<<< HEAD
         <li><a href="dashboard.php">Home</a></li>
             <li><a href="profile.php">Edit Profile</a></li>
             <li><a href="announcements.php">View Announcements</a></li>
@@ -248,11 +333,22 @@ $conn->close();
             <li><a href="Leaderboard.php">Leaderboard</a></li>
             <li><a href="LabSchedule.php">Lab Schedule</a></li>
             <li><a href="logout.php">Log Out</a></li>
+=======
+            <li><a href="dashboard.php">Home</a></li>
+            <li><a href="profile.php">Profile</a></li>
+            <li><a href="SitinRules.php">Sit-in Rules</a></li>
+            <li><a href="Labrules&Regulations.php">Lab Rules & Regulations</a></li>
+            <li><a href="announcements.php">Announcement</a></li>
+            <li><a href="Reservation.php">Reservation</a></li>
+            <li><a href="SitinHistory.php">Sit-in History</a></li>
+            <li><a href="logout.php">Logout</a></li>
+>>>>>>> 611347cb0330f243f87d23d32877186abb3261f1
         </ul>
     </div>
     <div class="main-content">
         <div class="profile-container">
             <h2>User Profile</h2>
+<<<<<<< HEAD
             <form action="profile.php" method="post" enctype="multipart/form-data" style="max-width: 850px; margin: 0 auto;">
     <!-- Profile Header -->
     <div style="text-align: center; margin-bottom: 30px;">
@@ -315,6 +411,49 @@ $conn->close();
     </div>
 </form>
 
+=======
+            <form action="profile.php" method="post" enctype="multipart/form-data">
+                <label for="profile_picture">
+                    <img src="<?php echo htmlspecialchars($userProfile['profile_picture'] ?? 'default.jpg'); ?>" alt="Profile Picture" class="profile-pic">
+                </label>
+                <input type="file" name="profile_picture" id="profile_picture" class="hidden-input" accept="image/*">
+                
+                <label for="idno">ID No:</label>
+                <input type="text" name="idno" value="<?php echo htmlspecialchars($userProfile['idno']); ?>" readonly>
+
+                <label for="firstname">First Name:</label>
+                <input type="text" name="firstname" value="<?php echo htmlspecialchars($userProfile['firstname']); ?>" required>
+
+                <label for="lastname">Last Name:</label>
+                <input type="text" name="lastname" value="<?php echo htmlspecialchars($userProfile['lastname']); ?>" required>
+
+                <label for="middlename">Middle Name:</label>
+                <input type="text" name="middlename" value="<?php echo htmlspecialchars($userProfile['middlename']); ?>">
+
+                <label for="course">Course:</label>
+                <select name="course" id="course" required>
+                    <option value="BSIT" <?php echo ($userProfile['course'] == 'BSIT') ? 'selected' : ''; ?>>BSIT</option>
+                    <option value="BSCS" <?php echo ($userProfile['course'] == 'BSCS') ? 'selected' : ''; ?>>BSCS</option>
+                    <option value="BEED" <?php echo ($userProfile['course'] == 'BEED') ? 'selected' : ''; ?>>BEED</option>
+                    <option value="BSED" <?php echo ($userProfile['course'] == 'BSED') ? 'selected' : ''; ?>>BSED</option>
+                    <option value="BSHM" <?php echo ($userProfile['course'] == 'BSHM') ? 'selected' : ''; ?>>BSHM</option>
+                    <option value="BSNS" <?php echo ($userProfile['course'] == 'BSNS') ? 'selected' : ''; ?>>BSNS</option>
+                    <option value="BSPYS" <?php echo ($userProfile['course'] == 'BSPYS') ? 'selected' : ''; ?>>BSPYS</option>
+                    <option value="BSATNG" <?php echo ($userProfile['course'] == 'BSATNG') ? 'selected' : ''; ?>>BSATNG</option>
+                </select>
+
+                <label for="year">Year Level:</label>
+                <input type="number" name="year" value="<?php echo htmlspecialchars($userProfile['year']); ?>" required>
+
+                <label for="email">Email Address:</label>
+                <input type="email" name="email" value="<?php echo htmlspecialchars($userProfile['email']); ?>" required>
+
+                <label for="username">Username:</label>
+                <input type="text" name="username" value="<?php echo htmlspecialchars($userProfile['username']); ?>" readonly>
+
+                <button type="submit">Update Profile</button>
+            </form>
+>>>>>>> 611347cb0330f243f87d23d32877186abb3261f1
         </div>
     </div>
 </body>

@@ -60,7 +60,11 @@ $conn->close();
             border-radius: 5px;
         }
         .btn {
+<<<<<<< HEAD
             background-color: #6a0dad;
+=======
+            background-color: purple;
+>>>>>>> 611347cb0330f243f87d23d32877186abb3261f1
             color: white;
             padding: 10px;
             border: none;
@@ -90,4 +94,8 @@ $conn->close();
 
     </div>
 </body>
+<<<<<<< HEAD
 </html>
+=======
+</html>
+>>>>>>> 611347cb0330f243f87d23d32877186abb3261f1

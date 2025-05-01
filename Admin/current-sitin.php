@@ -1,5 +1,9 @@
 <?php
 include './connection.php'; // Database connection
+<<<<<<< HEAD
+=======
+include 'navbar.php';
+>>>>>>> 611347cb0330f243f87d23d32877186abb3261f1
 
 // Handle timeout
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id'])) {
@@ -23,8 +27,11 @@ $query = "SELECT s.idno, s.firstname, s.lastname, si.purpose, si.laboratory, si.
           WHERE si.sit_out_time IS NULL
           ORDER BY si.sit_in_time DESC";
 $result = $conn->query($query);
+<<<<<<< HEAD
 
 include 'navbar.php'; // Move it here, after all headers
+=======
+>>>>>>> 611347cb0330f243f87d23d32877186abb3261f1
 ?>
 
 <!DOCTYPE html>
@@ -61,7 +68,11 @@ include 'navbar.php'; // Move it here, after all headers
             text-align: left;
         }
         th {
+<<<<<<< HEAD
             background-color: #6a0dad;
+=======
+            background-color: purple;
+>>>>>>> 611347cb0330f243f87d23d32877186abb3261f1
             color: white;
         }
         .no-data {
@@ -70,7 +81,11 @@ include 'navbar.php'; // Move it here, after all headers
             margin-top: 20px;
         }
         .timeout-btn {
+<<<<<<< HEAD
             background-color: green;
+=======
+            background-color: red;
+>>>>>>> 611347cb0330f243f87d23d32877186abb3261f1
             color: white;
             padding: 5px 10px;
             border: none;
