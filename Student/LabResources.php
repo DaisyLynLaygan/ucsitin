@@ -12,8 +12,9 @@ $lastname = $_SESSION['lastname'] ?? '';
 $profile_picture = $_SESSION['profile_picture'] ?? 'de.jpg';
 
 // Fetch uploaded resources
+// Fetch uploaded resources available to students
 $resources = [];
-$result = $conn->query("SELECT * FROM resources");
+$result = $conn->query("SELECT * FROM resources WHERE availability IN ('All Users', 'Students Only')");
 if ($result && $result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
         $resources[] = $row;

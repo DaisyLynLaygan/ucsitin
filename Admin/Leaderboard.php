@@ -11,25 +11,25 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 // Get top 3 performers
 $top_query = "SELECT 
     s.idNo, s.firstname, s.lastname, s.points, s.sessions,
-    SEC_TO_TIME(SUM(TIMESTAMPDIFF(SECOND, si.sitin_time, si.sit_out))) AS total_duration 
-    FROM student s 
-    LEFT JOIN sit_in si ON s.idNo = si.student_id 
-    GROUP BY s.idNo 
-    ORDER BY s.points DESC, total_duration DESC 
+    SEC_TO_TIME(SUM(TIMESTAMPDIFF(SECOND, si.sitin_time, si.sit_out_time))) AS total_duration
+    FROM student s
+    LEFT JOIN sit_in si ON s.idNo = si.idno
+    GROUP BY s.idNo
+    ORDER BY s.points DESC, total_duration DESC
     LIMIT 3";
 $top_result = $conn->query($top_query);
 
 // Get full leaderboard
 $all_query = "SELECT 
     s.idNo, s.firstname, s.lastname, s.points, s.sessions,
-    SEC_TO_TIME(SUM(TIMESTAMPDIFF(SECOND, si.sitin_time, si.sit_out))) AS total_duration 
-    FROM student s 
-    LEFT JOIN sit_in si ON s.idNo = si.student_id 
-    GROUP BY s.idNo 
+    SEC_TO_TIME(SUM(TIMESTAMPDIFF(SECOND, si.sitin_time, si.sit_out_time))) AS total_duration
+    FROM student s
+    LEFT JOIN sit_in si ON s.idNo = si.idno
+    GROUP BY s.idNo
     ORDER BY s.points DESC, total_duration DESC";
 $all_result = $conn->query($all_query);
 
-// Recent rewards
+// Get recent rewards
 $rewards_query = "SELECT r.rewarded_to, s.firstname, s.lastname, r.rewarded_at 
                   FROM reward_log r 
                   JOIN student s ON s.idNo = r.rewarded_to 
