@@ -131,14 +131,17 @@ h2 {
         </div>
         <ul>
         <li><a href="dashboard.php">Home</a></li>
-            <li><a href="profile.php">Profile</a></li>
+            <li><a href="profile.php">Edit Profile</a></li>
+            <li><a href="announcements.php">View Announcements</a></li>
             <li><a href="SitinRules.php">Sit-in Rules</a></li>
             <li><a href="Labrules&Regulations.php">Lab Rules</a></li>
-            <li><a href="announcements.php">Announcement</a></li>
             <li><a href="Reservation.php">Reservation</a></li>
-            <li><a href="SitinHistory.php">History</a></li>
+            <li><a href="SitinHistory.php">Sit-in History</a></li>
+            <li><a href="LabResources.php">View Lab Resources</a></li>
             <li><a href="ViewSession.php">Session</a></li>
-            <li><a href="logout.php">Logout</a></li>
+            <li><a href="Leaderboard.php">Leaderboard</a></li>
+            <li><a href="LabSchedule.php">Lab Schedule</a></li>
+            <li><a href="logout.php">Log Out</a></li>
         </ul>
     </div>
     
