@@ -1,10 +1,13 @@
 <?php
-session_start();
+// Start session and check if admin is logged in
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
     header("Location: login.php");
     exit();
 }
-include 'connection.php'; 
+include 'connection.php';
 ?>
 
 <!DOCTYPE html>
@@ -184,7 +187,7 @@ include 'connection.php';
     </style>
 </head>
 <body>
-<!-- basename($_SERVER['PHP_SELF']) is a PHP function used to get the filename of the currently executing script. -->
+<!-- basename($_SERVER['PHP_SELF']) is a PHP function used to get the filename of the currently executing script. --> 
     <div class="sidebar">
         <ul>
             <li class="<?= basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : ''; ?>"><a href="dashboard.php" ><i class="fas fa-user-shield"></i> Admin</a></li>
@@ -197,10 +200,15 @@ include 'connection.php';
             <li class="<?= basename($_SERVER['PHP_SELF']) == 'view-reservation.php' ? 'active' : ''; ?>"><a href="view-reservation.php"><i class="fas fa-calendar-check"></i> View Reservations</a></li>
             <li class="<?= basename($_SERVER['PHP_SELF']) == 'statistics.php' ? 'active' : ''; ?>"><a href="statistics.php"><i class="fas fa-chart-pie"></i> Statistics</a></li>
             <li class="<?= basename($_SERVER['PHP_SELF']) == 'daily-analytics.php' ? 'active' : ''; ?>"><a href="daily-analytics.php"><i class="fas fa-chart-line"></i> Daily Analytics</a></li>
+            <li class="<?= basename($_SERVER['PHP_SELF']) == 'Lab-management.php' ? 'active' : ''; ?>"><a href="Lab-management.php"><i class="fas fa-chart-line"></i>Lab-Management</a></li>
+            <li class="<?= basename($_SERVER['PHP_SELF']) == 'ReservationLog.php' ? 'active' : ''; ?>"><a href="ReservationLog.php"><i class="fas fa-chart-line"></i>Reservation Log</a></li>
+            <li class="<?= basename($_SERVER['PHP_SELF']) == 'Lab Schedule.php' ? 'active' : ''; ?>"><a href="Lab Schedule.php"><i class="fas fa-chart-line"></i>Lab Schedule</a></li>
+            <li class="<?= basename($_SERVER['PHP_SELF']) == 'Leaderboard.php' ? 'active' : ''; ?>"><a href="Leaderboard.php"><i class="fas fa-chart-line"></i>Leaderboard</a></li>
+            <li class="<?= basename($_SERVER['PHP_SELF']) == 'upload_resources.php' ? 'active' : ''; ?>"><a href="upload_resources.php"><i class="fas fa-chart-line"></i>upload resources</a></li>
             <li class="sidebar_logout"><a href="javascript:void(0);" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul>
     </div>
-    <div class="main-content"> <!-- Note: This has no closing div since this will render on another php file meaning the closing div of this is in there -->
+    <div class="main-content"> <!-- Note: This has no closing div since this will render on another php file meaning the closing div of this is in there --> 
         <div id="confirmationModal">
             <div class="modal-content">
                 <h3>Are you sure you want to log out?</h3>

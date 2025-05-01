@@ -3,7 +3,7 @@
 $host = "localhost";
 $db_username = "root";  
 $password = "";    
-$database = "sitin";   
+$database = "ucsitin";   
 
 // Create connection
 $conn = new mysqli($host, $db_username, $password, $database);
