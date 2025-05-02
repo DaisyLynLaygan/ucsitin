@@ -91,7 +91,7 @@ $result = $conn->query($query);
     $(document).ready(function () {
         const table = $('#sitInTable').DataTable({
             dom: 'Bfrtip',
-            buttons: ['csv', 'excel', 'pdf', 'print'],
+            buttons: ['csv', 'excel', 'pdf'],
             responsive: true
         });
 

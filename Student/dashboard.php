@@ -71,44 +71,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin: 0;
         }
         .sidebar {
-            width: 150px;
-            background-color: #4B0082;
-            color: white;
-            height: 100vh;
+            width: 220px;
+            background-color: #6a0dad;
             padding: 20px;
+            height: 100vh;
             position: fixed;
-            top: 0;
-            left: 0;
             overflow-y: auto;
-        }
-        .profile-section {
-            text-align: center;
-            margin-bottom: 20px;
         }
         .profile-pic {
             width: 80px;
             height: 80px;
             border-radius: 50%;
             border: 3px solid white;
+            object-fit: cover;
+        }
+        .sidebar .profile-section {
+            text-align: center;
+            margin-bottom: 30px;
         }
         .sidebar ul {
             list-style: none;
             padding: 0;
         }
         .sidebar ul li {
-            padding: 15px;
-            display: flex;
-            align-items: center;
-        }
-        .sidebar ul li i {
-            margin-right: 10px;
+            margin: 10px 0;
         }
         .sidebar ul li a {
             color: white;
             text-decoration: none;
-            flex: 1;
+            padding: 10px;
+            display: block;
+            border-radius: 5px;
         }
-        .sidebar ul li:hover {
+        .sidebar ul li a:hover {
             background-color: rgba(255, 255, 255, 0.2);
         }
         .main-content {
@@ -175,7 +170,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <li><a href="Leaderboard.php">Leaderboard</a></li>
             <li><a href="LabSchedule.php">Lab Schedule</a></li>
             <li><a href="logout.php">Log Out</a></li>
-        </ul>
+    </ul>
     </div>
     <div class="main-content">
         <div class="top-section">

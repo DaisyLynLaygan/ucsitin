@@ -15,7 +15,7 @@ $profile_picture = $_SESSION['profile_picture'] ?? 'de.jpg';
 $idno = $_SESSION['idno'];
 
 // Get remaining sessions from the database
-$sessionsResult = $conn->query("SELECT sessions FROM student WHERE idNo = '$idno'");
+$sessionsResult = $conn->query("SELECT sessions FROM student WHERE idno = '$idno'");
 $remainingSessions = 0;
 if ($sessionsResult && $sessionsResult->num_rows > 0) {
     $remainingSessions = $sessionsResult->fetch_assoc()['sessions'];
@@ -49,23 +49,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitReserve'])) {
     $lab = $_POST['lab'] ?? '';
     $date = $_POST['date'] ?? '';
     $start_time = $_POST['start_time'] ?? '';
-    $end_time = ''; // Not used in form
     $reason = $_POST['reason'] ?? '';
-    $language = ''; // Not used in form
+    $pc_no = $_POST['pc'] ?? '';
     $status = 'pending';
 
-    if ($lab && $date && $start_time && $reason) {
-        $sql = "INSERT INTO reservations (user_id, lab, date, start_time, end_time, reason, language, status) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    if ($lab && $date && $start_time && $reason && $pc_no) {
+        $sql = "INSERT INTO reservations (user_id, lab, date, start_time, reason, pc_no, status) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("isssssss", $idno, $lab, $date, $start_time, $end_time, $reason, $language, $status);
+        $stmt->bind_param("issssss", $idno, $lab, $date, $start_time, $reason, $pc_no, $status);
 
         if ($stmt->execute()) {
-            $reservationSuccess = true;
+            header("Location: " . $_SERVER['PHP_SELF'] . "?success=1");
+            exit(); // Prevent re-submission
         }
         $stmt->close();
     }
 }
+
+$reservationSuccess = isset($_GET['success']) && $_GET['success'] == '1';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -126,6 +128,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitReserve'])) {
             margin-left: 260px;
             padding: 40px;
             width: calc(100% - 260px);
+            color: white;
         }
         h2 {
             color: #fafafa;
@@ -205,41 +208,53 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitReserve'])) {
             <div class="form-section" style="flex: 1;">
                 <h3 style="color: white;">New Reservation</h3>
                 <?php if ($reservationSuccess): ?>
-                    <p style="color: #22c55e; font-weight: bold;">✅ Reservation submitted!</p>
+                    <script>
+                        alert("✅ Reservation submitted!");
+                        window.scrollTo(0, 0);
+                    </script>
                 <?php endif; ?>
-                <form method="POST">
+                <form method="POST" id="reservationForm">
                     <label>Student ID</label>
-                    <input type="text" value="<?php echo $idno; ?>" readonly>
-                    <label>Name</label>
-                    <input type="text" value="<?php echo $firstname . ' ' . $lastname; ?>" readonly>
+                    <input type="text" value="<?php echo htmlspecialchars($idno); ?>" readonly>
+
                     <label>Remaining Sessions</label>
-                    <input type="text" value="<?php echo $remainingSessions; ?>" readonly>
+                    <input type="text" value="<?php echo htmlspecialchars($remainingSessions); ?>" readonly>
+
                     <label>Purpose *</label>
                     <select name="reason" required>
                         <option value="">Select Purpose</option>
                         <option value="C Programming">C Programming</option>
                         <option value="Java Programming">Java Programming</option>
                         <option value="Python">Python</option>
-                        <option value="Python">PHP</option>
-                        <option value="Python">C#</option>
-                        <option value="Python">Digilog</option>
-                        <option value="Python">System Architecture</option>
+                        <option value="PHP">PHP</option>
+                        <option value="C#">C#</option>
+                        <option value="Digilog">Digilog</option>
+                        <option value="System Architecture">System Architecture</option>
                     </select>
+
                     <label>Laboratory Room *</label>
-                    <select name="lab" required>
+                    <select name="lab" id="lab-select" required>
                         <option value="">Select Lab</option>
-                        <option value="Lab 517">Lab 524</option>
-                        <option value="Lab 526">Lab 526</option>
-                        <option value="Lab 526">Lab 528</option> 
-                        <option value="Lab 526">Lab 530</option>
-                        <option value="Lab 526">Lab 542</option>
-                        <option value="Lab 526">Lab 544</option>
+                        <option value="524">Lab 524</option>
+                        <option value="526">Lab 526</option>
+                        <option value="528">Lab 528</option>
+                        <option value="530">Lab 530</option>
+                        <option value="542">Lab 542</option>
+                        <option value="544">Lab 544</option>
                     </select>
+
+                    <label>Select PC *</label>
+                    <select name="pc" id="pc-select" required>
+                        <option value="">Select a lab first</option>
+                    </select>
+
                     <label>Date *</label>
                     <input type="date" name="date" required>
+
                     <label>Time In *</label>
                     <input type="time" name="start_time" required>
-                    <button type="submit" name="submitReserve">🚀 Submit Reservation</button>
+
+                    <button type="submit" name="submitReserve">Submit Reservation</button>
                 </form>
             </div>
             <div class="history-section" style="flex: 1;">
@@ -262,7 +277,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitReserve'])) {
                         <tr>
                             <td><?php echo htmlspecialchars($row['date']); ?></td>
                             <td><?php echo htmlspecialchars($row['lab']); ?></td>
-                            <td>PC <?php echo rand(1, 10); ?></td>
+                            <td><?php echo htmlspecialchars($row['pc_no']); ?></td>
                             <td><?php echo htmlspecialchars($row['start_time']); ?></td>
                             <td><?php echo ucfirst($row['status']); ?></td>
                         </tr>
@@ -272,6 +287,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submitReserve'])) {
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+        const labSelect = document.getElementById('lab-select');
+        const pcSelect = document.getElementById('pc-select');
+
+        labSelect.addEventListener('change', function () {
+            const labValue = labSelect.value;
+            pcSelect.innerHTML = '<option value="">Loading PCs...</option>';
+
+            if (!labValue) {
+                pcSelect.innerHTML = '<option value="">Select a lab first</option>';
+                return;
+            }
+
+            fetch(`fetch_pcs.php?lab=Lab%20${encodeURIComponent(labValue)}`)
+                .then(res => res.json())
+                .then(data => {
+                    pcSelect.innerHTML = '<option value="">Select a PC</option>';
+                    data.forEach(pc => {
+                        const opt = document.createElement('option');
+                        opt.value = pc.pc_no;
+                        opt.textContent = pc.pc_no;
+                        pcSelect.appendChild(opt);
+                    });
+                })
+                .catch(() => {
+                    pcSelect.innerHTML = '<option value="">Error loading PCs</option>';
+                });
+        });
+
+        // Show success message if redirected
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("success") === "1") {
+            alert("✅ Reservation submitted!");
+            history.replaceState(null, '', window.location.pathname); // Clean URL
+        }
+    });
+    </script>
 </body>
 </html>
 

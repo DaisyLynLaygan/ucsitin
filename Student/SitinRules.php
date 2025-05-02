@@ -69,51 +69,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     margin: 0;
     background: linear-gradient(to right, #f5f7fa, #e6e9f0);
 }
-
 .sidebar {
-    width: 150px;
-    background-color: #6a0dad;
-    color: white;
-    height: 100vh;
-    padding: 20px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    overflow-y: auto;
-}
-
-.profile-section {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.profile-pic {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: 3px solid white;
-}
-
-.sidebar ul {
-    list-style: none;
-    padding: 0;
-}
-
-.sidebar ul li {
-    padding: 15px;
-    text-align: center;
-    transition: background 0.3s;
-}
-
-.sidebar ul li a {
-    color: white;
-    text-decoration: none;
-    display: block;
-}
-
-.sidebar ul li:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-}
+            width: 220px;
+            background-color: #6a0dad;
+            padding: 20px;
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+        }
+        .profile-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid white;
+            object-fit: cover;
+        }
+        .sidebar .profile-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            margin: 10px 0;
+        }
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            display: block;
+            border-radius: 5px;
+        }
+        .sidebar ul li a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
 
 .main-content {
     margin-left: 270px;
@@ -177,7 +168,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <li><a href="profile.php">Edit Profile</a></li>
             <li><a href="announcements.php">View Announcements</a></li>
             <li><a href="SitinRules.php">Sit-in Rules</a></li>
-            <li><a href="Labrules&Regulations.php">Lab Rules</a></li>
             <li><a href="Reservation.php">Reservation</a></li>
             <li><a href="SitinHistory.php">Sit-in History</a></li>
             <li><a href="LabResources.php">View Lab Resources</a></li>
@@ -185,7 +175,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <li><a href="Leaderboard.php">Leaderboard</a></li>
             <li><a href="LabSchedule.php">Lab Schedule</a></li>
             <li><a href="logout.php">Log Out</a></li>
-        </ul>
+    </ul>
     </div>
     <div class="main-content">
         <div class="rules-container">

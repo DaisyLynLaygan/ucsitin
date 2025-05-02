@@ -115,7 +115,7 @@ function viewMessage(message) {
 $(document).ready(function () {
     $('#feedbackTable').DataTable({
         dom: 'Bfrtip',
-        buttons: ['csv', 'excel', 'pdf', 'print']
+        buttons: ['csv', 'excel', 'pdf']
     });
 
     $('#search').on("keyup", function () {

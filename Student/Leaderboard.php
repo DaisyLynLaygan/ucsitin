@@ -168,7 +168,7 @@ while ($row = $rankingQuery->fetch_assoc()) {
             <li><a href="Leaderboard.php">Leaderboard</a></li>
             <li><a href="LabSchedule.php">Lab Schedule</a></li>
             <li><a href="logout.php">Log Out</a></li>
-        </ul>
+    </ul>
     </div>
 
     <div class="main-content">

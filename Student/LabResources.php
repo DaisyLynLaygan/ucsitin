@@ -10,28 +10,19 @@ if (!isset($_SESSION['idno'])) {
 $firstname = $_SESSION['firstname'] ?? '';
 $lastname = $_SESSION['lastname'] ?? '';
 $profile_picture = $_SESSION['profile_picture'] ?? 'de.jpg';
-
-// Fetch uploaded resources
-// Fetch uploaded resources available to students
-$resources = [];
-$result = $conn->query("SELECT * FROM resources WHERE availability IN ('All Users', 'Students Only')");
-if ($result && $result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $resources[] = $row;
-    }
-}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Uploaded Resources</title>
+    <title>Lab Resources</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
             margin: 0;
+            background-color: #f4f4f4;
             font-family: 'Segoe UI', sans-serif;
-            background-color: #fafafa;
-            color: #6a0dad;
             display: flex;
         }
         .sidebar {
@@ -70,56 +61,48 @@ if ($result && $result->num_rows > 0) {
         .sidebar ul li a:hover {
             background-color: rgba(255, 255, 255, 0.2);
         }
-        .main-content {
+        .main {
             margin-left: 260px;
-            padding: 40px;
+            padding: 60px 20px;
             width: calc(100% - 260px);
+            display: flex;
+            justify-content: center;
         }
-        .section-box {
-            background: #6a0dad;
-            padding: 30px;
-            border-radius: 15px;
+        .card {
+            width: 100%;
+            max-width: 900px;
+            background-color: #f9f7ff;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            text-align: center;
         }
         h2 {
-            color: #fafafa;
-            margin-bottom: 30px;
+            margin-top: 0;
+            font-size: 28px;
+            color: #333;
         }
-        .resource-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
+        p {
+            margin-bottom: 20px;
+            color: #444;
         }
-        .resource-card {
-            background-color: #fafafa;
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            width: 200px;
-        }
-        .resource-icon {
-            font-size: 48px;
-            margin-bottom: 10px;
-        }
-        .resource-title {
-            font-size: 16px;
-            margin-bottom: 5px;
-        }
-        .resource-size {
-            font-size: 12px;
-            color: #94a3b8;
-            margin-bottom: 15px;
-        }
-        .download-btn {
-            background-color: #6a0dad;
+        .google-drive-btn {
+            display: inline-block;
+            background-color: #4285F4;
             color: white;
-            padding: 8px 16px;
+            padding: 14px 28px;
             border: none;
-            border-radius: 6px;
-            cursor: pointer;
+            border-radius: 8px;
             text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+            transition: background 0.2s ease;
         }
-        .download-btn:hover {
-            background-color: #6a0dad;
+        .google-drive-btn i {
+            margin-right: 8px;
+        }
+        .google-drive-btn:hover {
+            background-color: #3073dc;
         }
     </style>
 </head>
@@ -130,37 +113,28 @@ if ($result && $result->num_rows > 0) {
         <p><?php echo htmlspecialchars($firstname . " " . $lastname); ?></p>
     </div>
     <ul>
-    <li><a href="dashboard.php">Home</a></li>
-            <li><a href="profile.php">Edit Profile</a></li>
-            <li><a href="announcements.php">View Announcements</a></li>
-            <li><a href="SitinRules.php">Sit-in Rules</a></li>
-            <li><a href="Labrules&Regulations.php">Lab Rules</a></li>
-            <li><a href="Reservation.php">Reservation</a></li>
-            <li><a href="SitinHistory.php">Sit-in History</a></li>
-            <li><a href="LabResources.php">View Lab Resources</a></li>
-            <li><a href="ViewSession.php">Session</a></li>
-            <li><a href="Leaderboard.php">Leaderboard</a></li>
-            <li><a href="LabSchedule.php">Lab Schedule</a></li>
-            <li><a href="logout.php">Log Out</a></li>
+        <li><a href="dashboard.php">Home</a></li>
+        <li><a href="profile.php">Edit Profile</a></li>
+        <li><a href="announcements.php">View Announcements</a></li>
+        <li><a href="SitinRules.php">Sit-in Rules</a></li>
+        <li><a href="Labrules&Regulations.php">Lab Rules</a></li>
+        <li><a href="Reservation.php">Reservation</a></li>
+        <li><a href="SitinHistory.php">Sit-in History</a></li>
+        <li><a href="LabResources.php">View Lab Resources</a></li>
+        <li><a href="ViewSession.php">Session</a></li>
+        <li><a href="Leaderboard.php">Leaderboard</a></li>
+        <li><a href="LabSchedule.php">Lab Schedule</a></li>
+        <li><a href="logout.php">Log Out</a></li>
     </ul>
 </div>
-<div class="main-content">
-    <div class="section-box">
-        <h2><span style="font-size: 20px;">📁</span> Uploaded Resources</h2>
-        <div class="resource-grid">
-            <?php foreach ($resources as $res): ?>
-                <div class="resource-card">
-                    <div class="resource-icon">📄</div>
-                    <div class="resource-title"><?php echo htmlspecialchars($res['filename']); ?></div>
-                    <?php 
-                    $file_path = 'uploads/' . $res['filename']; 
-                    $size = file_exists($file_path) ? round(filesize($file_path) / 1024, 2) . ' KB' : 'File missing';
-                    ?>
-                    <div class="resource-size"><?php echo $size; ?></div>
-                    <a class="download-btn" href="<?php echo $file_path; ?>" download>⬇️ Download</a>
-                </div>
-            <?php endforeach; ?>
-        </div>
+
+<div class="main">
+    <div class="card">
+        <h2>Resource Management</h2>
+        <p>My Drive / Shared Resources</p>
+        <a class="google-drive-btn" href="https://drive.google.com/drive/folders/18bx8UxVLv301SdCZqZNNu-uYfRhRhWAv?usp=drive_link" target="_blank">
+            <i class="fas fa-folder-open"></i> Open Google Drive
+        </a>
     </div>
 </div>
 </body>

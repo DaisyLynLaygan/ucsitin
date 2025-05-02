@@ -8,6 +8,15 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit();
 }
 
+// Handle individual PC status update
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['pc_id']) && isset($_POST['new_status'])) {
+    $stmt = $conn->prepare("UPDATE pcs SET status = ? WHERE id = ?");
+    $stmt->bind_param("si", $_POST['new_status'], $_POST['pc_id']);
+    $stmt->execute();
+    header("Location: Lab-Management.php?lab=" . urlencode($_GET['lab']));
+    exit;
+}
+
 // Get selected lab
 $selectedLab = $_GET['lab'] ?? 'Lab 517';
 
@@ -40,6 +49,7 @@ while ($row = $pc_result->fetch_assoc()) {
 <head>
     <meta charset="UTF-8">
     <title>Lab Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         body {
             margin: 0;
@@ -52,7 +62,6 @@ while ($row = $pc_result->fetch_assoc()) {
             padding: 30px;
             align-items: center;
             width: 90%;
-
         }
         h2 {
             font-size: 24px;
@@ -104,7 +113,6 @@ while ($row = $pc_result->fetch_assoc()) {
             border-radius: 8px;
             margin-bottom: 20px;
         }
-
         .update-bar select, .update-bar button {
             padding: 8px 10px;
             margin-left: 10px;
@@ -112,85 +120,62 @@ while ($row = $pc_result->fetch_assoc()) {
             border-radius: 5px;
             font-size: 14px;
         }
-
         .update-bar select {
             background-color: #6a0dad;
             color: #e2e8f0;
         }
-
         .update-bar button {
             background-color: #6a0dad;
             color: white;
             cursor: pointer;
         }
-
+        .grid-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
         .grid {
+            width: 100%;
+            max-width: 1000px;
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
             gap: 15px;
         }
-
         .pc-card {
             background-color: #6a0dad;
             padding: 20px;
             border-radius: 8px;
             text-align: center;
+            color: white;
+            cursor: pointer;
         }
-
-        .pc-card i {
-            font-size: 32px;
-            margin-bottom: 10px;
-            color: #6a0dad;
-        }
-
-        .pc-card .label {
-            font-size: 14px;
-            font-weight: bold;
-            color: #6a0dad;
-        }
-
         .available { color: #22c55e; }
         .used { color: #ef4444; }
         .maintenance { color: #eab308; }
-
-            .grid-wrapper {
-            display: flex;
-            justify-content: center;
-                    margin-top: 20px;
-                }
-            .grid {
-                width: 100%;
-                max-width: 1000px;
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-                gap: 15px;
-            }
-        </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+        form.inline { display: inline; }
+    </style>
 </head>
 <body>
-    <div class="main-content">
-        <h2>Computer Lab Management</h2>
+<div class="main-content">
+    <h2>Computer Lab Management</h2>
+    <div class="tabs">
+        <?php foreach ($labs as $lab): ?>
+            <a class="<?= $lab === $selectedLab ? 'active' : '' ?>" href="?lab=<?= urlencode($lab) ?>"><?= $lab ?></a>
+        <?php endforeach; ?>
+    </div>
 
-        <div class="tabs">
-            <?php foreach ($labs as $lab): ?>
-                <a class="<?= $lab === $selectedLab ? 'active' : '' ?>" href="?lab=<?= urlencode($lab) ?>"><?= $lab ?></a>
-            <?php endforeach; ?>
-        </div>
-
-        <div class="lab-title"><?= $selectedLab ?></div>
-        <div class="update-bar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-    <form method="POST" action="update_all_pcs.php" style="display: flex; align-items: center; gap: 10px;">
-        <input type="hidden" name="lab" value="<?= $selectedLab ?>">
-        <label style="font-weight: 500;">Update All PCs in <?= $selectedLab ?></label>
-        <select name="status">
-            <option value="Available">Available</option>
-            <option value="Used">Used</option>
-            <option value="Maintenance">Maintenance</option>
-        </select>
-        <button type="submit">Update All</button>
-    </form>
-
+    <div class="lab-title"><?= $selectedLab ?></div>
+    <div class="update-bar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <form method="POST" action="update_all_pcs.php" style="display: flex; align-items: center; gap: 10px;">
+            <input type="hidden" name="lab" value="<?= $selectedLab ?>">
+            <label style="font-weight: 500;">Update All PCs in <?= $selectedLab ?></label>
+            <select name="status">
+                <option value="Available">Available</option>
+                <option value="Used">Used</option>
+                <option value="Maintenance">Maintenance</option>
+            </select>
+            <button type="submit">Update All</button>
+        </form>
         <div class="summary" style="display: flex; align-items: center; gap: 20px; font-size: 14px;">
             <span><span class="status-circle green"></span> Available: <?= $available ?></span>
             <span><span class="status-circle red"></span> In Use: <?= $used ?></span>
@@ -198,16 +183,22 @@ while ($row = $pc_result->fetch_assoc()) {
             <span>Total PCs: <?= $total ?></span>
         </div>
     </div>
-            <div class="grid-wrapper">
-             <div class="grid">
+
+    <div class="grid-wrapper">
+        <div class="grid">
             <?php foreach ($pcs as $pc): ?>
-                <div class="pc-card <?= strtolower($pc['status']) ?>">
-                    <i class="fas fa-desktop"></i>
-                    <div class="label"><?= htmlspecialchars($pc['pc_name']) ?></div>
-                    <div class="<?= strtolower($pc['status']) ?>"><?= $pc['status'] ?></div>
-                </div>
+                <form method="POST" class="inline">
+                    <input type="hidden" name="pc_id" value="<?= $pc['id'] ?>">
+                    <input type="hidden" name="new_status" value="<?= $pc['status'] === 'Available' ? 'Used' : ($pc['status'] === 'Used' ? 'Maintenance' : 'Available') ?>">
+                    <button type="submit" class="pc-card <?= strtolower($pc['status']) ?>">
+                        <i class="fas fa-desktop"></i>
+                        <div class="label"><?= htmlspecialchars($pc['pc_name']) ?></div>
+                        <div class="<?= strtolower($pc['status']) ?>"><?= $pc['status'] ?></div>
+                    </button>
+                </form>
             <?php endforeach; ?>
         </div>
     </div>
+</div>
 </body>
 </html>

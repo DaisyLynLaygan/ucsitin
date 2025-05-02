@@ -22,53 +22,41 @@ $result = $conn->query("SELECT * FROM announcements ORDER BY date_posted DESC");
 }
 
 .sidebar {
-    width: 220px;
-    background: #6a0dad;
-    color: white;
-    height: 100vh;
-    padding: 25px 15px;
-    position: fixed;
-    top: 0;
-    left: 0;
-}
-
-.profile {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.profile img {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: white;
-    padding: 5px;
-    object-fit: cover;
-}
-
-.sidebar ul {
-    list-style: none;
-    padding: 0;
-    margin-top: 20px;
-}
-
-.sidebar ul li {
-    margin-bottom: 15px;
-}
-
-.sidebar ul li a {
-    color: white;
-    text-decoration: none;
-    padding: 10px 15px;
-    display: block;
-    border-radius: 8px;
-    transition: background 0.3s;
-}
-
-.sidebar ul li a:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-}
-
+            width: 220px;
+            background-color: #6a0dad;
+            padding: 20px;
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+        }
+        .profile-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid white;
+            object-fit: cover;
+        }
+        .sidebar .profile-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            margin: 10px 0;
+        }
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            display: block;
+            border-radius: 5px;
+        }
+        .sidebar ul li a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
 .content {
     margin-left: 240px;
     padding: 40px;
@@ -134,7 +122,6 @@ h2 {
             <li><a href="profile.php">Edit Profile</a></li>
             <li><a href="announcements.php">View Announcements</a></li>
             <li><a href="SitinRules.php">Sit-in Rules</a></li>
-            <li><a href="Labrules&Regulations.php">Lab Rules</a></li>
             <li><a href="Reservation.php">Reservation</a></li>
             <li><a href="SitinHistory.php">Sit-in History</a></li>
             <li><a href="LabResources.php">View Lab Resources</a></li>
@@ -142,7 +129,7 @@ h2 {
             <li><a href="Leaderboard.php">Leaderboard</a></li>
             <li><a href="LabSchedule.php">Lab Schedule</a></li>
             <li><a href="logout.php">Log Out</a></li>
-        </ul>
+    </ul>
     </div>
     
     <div class="content">

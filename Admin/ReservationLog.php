@@ -8,16 +8,22 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit();
 }
 
-$status_filter = $_GET['status'] ?? 'All';
+$status_filter = $_GET['status'] ?? 'Approved'; // default to Approved
 $lab_filter = $_GET['lab'] ?? 'All';
 $date_filter = $_GET['date'] ?? '';
+
+// Only allow Approved or Disapproved
+$valid_statuses = ['Approved', 'Disapproved'];
+if (!in_array($status_filter, $valid_statuses)) {
+    $status_filter = 'Approved';
+}
 
 $query = "SELECT r.*, s.firstname, s.lastname 
           FROM reservations r 
           JOIN student s ON r.user_id = s.idNo 
-          WHERE 1=1";
+          WHERE r.status IN ('Approved', 'Disapproved')";
 
-if ($status_filter !== 'All') {
+if (!empty($status_filter)) {
     $query .= " AND r.status = '" . $conn->real_escape_string($status_filter) . "'";
 }
 if ($lab_filter !== 'All') {
@@ -29,8 +35,8 @@ if (!empty($date_filter)) {
 $query .= " ORDER BY r.date DESC";
 
 $result = $conn->query($query);
-$labs = ['Lab 517', 'Lab 524', 'Lab 526', 'Lab 528', 'Lab 530', 'Lab 542', 'Lab 544'];
-$statuses = ['Approved', 'Pending', 'Declined'];
+$labs = ['Lab 524', 'Lab 526', 'Lab 528', 'Lab 530', 'Lab 542', 'Lab 544'];
+$statuses = ['Approved', 'Disapproved'];
 ?>
 
 <!DOCTYPE html>
@@ -118,7 +124,6 @@ $statuses = ['Approved', 'Pending', 'Declined'];
     <h2 style="margin: 0;">Reservation Logs</h2>
     <form method="GET" class="filter-bar" style="display: flex; align-items: center; gap: 12px;">
         <select name="status">
-            <option value="All" <?= $status_filter == 'All' ? 'selected' : '' ?>>All Statuses</option>
             <?php foreach ($statuses as $status): ?>
                 <option value="<?= $status ?>" <?= $status_filter == $status ? 'selected' : '' ?>><?= $status ?></option>
             <?php endforeach; ?>
@@ -149,18 +154,24 @@ $statuses = ['Approved', 'Pending', 'Declined'];
         </tr>
         </thead>
         <tbody>
-        <?php while ($row = $result->fetch_assoc()): ?>
+        <?php if ($result->num_rows > 0): ?>
+            <?php while ($row = $result->fetch_assoc()): ?>
+                <tr>
+                    <td><?= htmlspecialchars($row['firstname'] . ' ' . $row['lastname']) ?></td>
+                    <td><?= htmlspecialchars($row['user_id']) ?></td>
+                    <td><?= htmlspecialchars($row['reason']) ?></td>
+                    <td><?= htmlspecialchars($row['lab']) ?></td>
+                    <td><?= htmlspecialchars($row['language']) ?></td>
+                    <td><?= htmlspecialchars($row['date']) ?></td>
+                    <td><?= htmlspecialchars($row['start_time']) ?></td>
+                    <td class="status-<?= strtolower($row['status']) ?>"><?= $row['status'] ?></td>
+                </tr>
+            <?php endwhile; ?>
+        <?php else: ?>
             <tr>
-                <td><?= htmlspecialchars($row['firstname'] . ' ' . $row['lastname']) ?></td>
-                <td><?= htmlspecialchars($row['user_id']) ?></td>
-                <td><?= htmlspecialchars($row['reason']) ?></td>
-                <td><?= htmlspecialchars($row['lab']) ?></td>
-                <td><?= htmlspecialchars($row['language']) ?></td>
-                <td><?= htmlspecialchars($row['date']) ?></td>
-                <td><?= htmlspecialchars($row['start_time']) ?></td>
-                <td class="status-<?= strtolower($row['status']) ?>"><?= $row['status'] ?></td>
+                <td colspan="8" style="text-align: center; font-style: italic; color: #888;">No reservation logs found.</td>
             </tr>
-        <?php endwhile; ?>
+        <?php endif; ?>
         </tbody>
     </table>
 </div>

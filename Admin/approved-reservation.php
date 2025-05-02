@@ -15,14 +15,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reservation_id'], $_P
     // Ensure reservation ID is valid
     if ($reservation_id > 0) {
         if ($action === 'approve') {
-            // Update status to approved with a message
-            $stmt = $conn->prepare("UPDATE reservations SET status = 'approved', message = 'Sit-in approved' WHERE id = ?");
+            // First, update reservation status and message
+            $stmt = $conn->prepare("UPDATE reservations SET status = 'approved' WHERE id = ?");
             $stmt->bind_param("i", $reservation_id);
             $stmt->execute();
             $stmt->close();
+
+            // Then, fetch reservation details for sitin insert
+            $stmt = $conn->prepare("SELECT user_id, reason, lab FROM reservations WHERE id = ?");
+            $stmt->bind_param("i", $reservation_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($row = $result->fetch_assoc()) {
+                $idno = $row['user_id'];
+                $purpose = $row['reason'];
+                $labFull = $row['lab'];
+
+                // Extract room number from "Lab 203"
+                $roomNumber = trim(str_replace('Lab', '', $labFull));
+
+                // Insert into sitin table
+                $insertStmt = $conn->prepare("INSERT INTO sit_in (idno, purpose, laboratory) VALUES (?, ?, ?)");
+                $insertStmt->bind_param("sss", $idno, $purpose, $roomNumber);
+                $insertStmt->execute();
+                $insertStmt->close();
+            }
+
+            $stmt->close();
         } elseif ($action === 'disapprove') {
-            // Update status to disapproved
-            $stmt = $conn->prepare("UPDATE reservations SET status = 'disapproved', message = 'Reservation disapproved' WHERE id = ?");
+            $stmt = $conn->prepare("UPDATE reservations SET status = 'disapproved' WHERE id = ?");
             $stmt->bind_param("i", $reservation_id);
             $stmt->execute();
             $stmt->close();

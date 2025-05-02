@@ -252,18 +252,18 @@ $conn->close();
             </p>
         </div>
         <ul>
-            <li class="<?= $currentPage == 'dashboard.php' ? 'active' : '' ?>"><a href="dashboard.php">Home</a></li>
-            <li class="<?= $currentPage == 'profile.php' ? 'active' : '' ?>"><a href="profile.php">Edit Profile</a></li>
-            <li class="<?= $currentPage == 'announcements.php' ? 'active' : '' ?>"><a href="announcements.php">Announcement</a></li>
-            <li class="<?= $currentPage == 'SitinRules.php' ? 'active' : '' ?>"><a href="SitinRules.php">Sit-in Rules</a></li>
-            <li class="<?= $currentPage == 'Labrules&Regulations.php' ? 'active' : '' ?>"><a href="Labrules&Regulations.php">Lab Rules</a></li>
-            <li class="<?= $currentPage == 'Reservation.php' ? 'active' : '' ?>"><a href="Reservation.php">Reservation</a></li>
-            <li class="<?= $currentPage == 'SitinHistory.php' ? 'active' : '' ?>"><a href="SitinHistory.php">Sit-in History</a></li>
-            <li class="<?= $currentPage == 'LabResource.php' ? 'active' : '' ?>"><a href="LabResource.php">View Lab Resource</a></li>
-            <li class="<?= $currentPage == 'ViewSession.php' ? 'active' : '' ?>"><a href="ViewSession.php">Session</a></li>
-            <li class="<?= $currentPage == 'Leaderboard.php' ? 'active' : '' ?>"><a href="Leaderboard.php">Leaderboard</a></li>
-            <li class="<?= $currentPage == 'LabSchedule.php' ? 'active' : '' ?>"><a href="LabSchedule.php">Lab Schedule</a></li>
-            <li><a href="logout.php">Logout</a></li>
+        <li><a href="dashboard.php">Home</a></li>
+            <li><a href="profile.php">Edit Profile</a></li>
+            <li><a href="announcements.php">View Announcements</a></li>
+            <li><a href="SitinRules.php">Sit-in Rules</a></li>
+            <li><a href="Reservation.php">Reservation</a></li>
+            <li><a href="SitinHistory.php">Sit-in History</a></li>
+            <li><a href="LabResources.php">View Lab Resources</a></li>
+            <li><a href="ViewSession.php">Session</a></li>
+            <li><a href="Leaderboard.php">Leaderboard</a></li>
+            <li><a href="LabSchedule.php">Lab Schedule</a></li>
+            <li><a href="logout.php">Log Out</a></li>
+    </ul>
         </ul>
     </div>
 
