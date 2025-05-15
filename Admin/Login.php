@@ -1,39 +1,28 @@
-
 <?php
 session_start();
-if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
-    header("Location: dashboard.php");
-    exit();
-}
-include 'connection.php'; // Ensure database connection
+include '../student/connection.php'; // Ensure the path is correct
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+    $username = trim($_POST['username']);
+    $password = trim($_POST['password']);
 
-    // Fetch admin from database
-    $sql = "SELECT * FROM admins WHERE username = ?";
-    $stmt = $conn->prepare($sql);
+    // Secure query using prepared statement
+    $query = "SELECT * FROM admins WHERE username = ?";
+    $stmt = $conn->prepare($query);
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
-    
-    if ($result->num_rows > 0) {
-        $admin = $result->fetch_assoc();
+    $admin = $result->fetch_assoc();
 
-        // Check password (Change this to password_verify() if using hashed passwords)
-        if ($password === $admin['password']) { // If using password_verify(), modify accordingly
-            $_SESSION['admin_username'] = $admin['username']; 
-            $_SESSION['admin_logged_in'] = true; // ✅ Add this line
-            header("Location: dashboard.php");
-            exit();
-        } else {
-            echo "<script>alert('Invalid password'); window.location='login.php';</script>";
-        }
+    // Verify password using password_verify()
+    if ($admin && password_verify($password, $admin['password'])) {
+        $_SESSION['admin'] = $admin['id']; // Store admin ID in session
+        header("Location: dashboard.php");
+        exit();
     } else {
-        echo "<script>alert('Invalid username'); window.location='login.php';</script>";
+        echo "<script>alert('Invalid login credentials!');</script>";
     }
-    
+
     $stmt->close();
     $conn->close();
 }
@@ -166,7 +155,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
     <div class="right">
         <div class="login-box">
-            <h1>Welcome To Sit-in Admin!</h1>
+            <h1>Welcome To Sit-in!</h1>
             <form method="POST">
                 <div class="input-group">
                     <label for="username">Username:</label>
@@ -177,7 +166,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <input type="password" name="password" id="password" required>
                 </div>
                 <button type="submit" class="btn" name="login">Login</button>
-                <a href="register.php" class="register-link">Create Account</a>
             </form>
         </div>
     </div>

@@ -1,5 +1,6 @@
 <?php
-session_start();
+include 'server.php'; // Include database connection file
+
 if (isset($_SESSION['student_logged_in']) && $_SESSION['student_logged_in'] === true) {
     header("Location: dashboard.php");
     exit();

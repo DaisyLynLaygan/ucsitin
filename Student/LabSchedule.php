@@ -1,237 +1,354 @@
 <?php
+// This must be the VERY FIRST LINE - no whitespace before!
 session_start();
-include './connection.php';
+$pageTitle = "Lab Schedule";
 
-if (!isset($_SESSION['idno'])) {
-    header("Location: login.php");
-    exit;
+// Include database connection
+include 'connection.php';
+
+// Now include header after all potential header operations are complete
+include 'header.php';
+
+// Get current laboratory from query parameter (default to 524)
+$current_laboratory = isset($_GET['laboratory']) ? $_GET['laboratory'] : '524';
+
+// Fetch all schedule data for the current laboratory
+$schedule_data = [];
+$stmt = $conn->prepare("SELECT day, status FROM lab_schedules WHERE laboratory = ?");
+$stmt->bind_param("s", $current_laboratory);
+$stmt->execute();
+$result = $stmt->get_result();
+while ($row = $result->fetch_assoc()) {
+    $schedule_data[$row['day']] = $row['status'];
+}
+$stmt->close();
+?>
+<style>
+.container {
+    max-width: 1400px;
+    margin: 20px auto;
+    padding: 0 20px;
 }
 
-$firstname = $_SESSION['firstname'] ?? '';
-$lastname = $_SESSION['lastname'] ?? '';
-$profile_picture = $_SESSION['profile_picture'] ?? 'de.jpg';
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
 
-// Static slots and labs
-$timeSlots = [
-    "7:30AM–9:00AM", "9:00AM–10:30AM", "10:30AM–12:00PM",
-    "12:00PM–1:30PM", "1:30PM–3:00PM", "3:00PM–4:30PM",
-    "4:30PM–6:00PM", "6:00PM–7:30PM", "7:30PM–9:00PM"
-];
+.page-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #303f9f;
+    margin: 0;
+}
 
-$labs = ["Lab 517", "Lab 524", "Lab 526", "Lab 528", "Lab 530", "Lab 542", "Lab 544"];
-$days = ["Monday/Wednesday", "Tuesday/Thursday", "Friday", "Saturday"];
+.laboratory-selector {
+    margin-bottom: 25px;
+    background: white;
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
 
-// Simulated availability data (replace with DB logic if needed)
-$schedule = [];
-foreach ($days as $day) {
-    foreach ($timeSlots as $slot) {
-        foreach ($labs as $lab) {
-            $status = (rand(0, 1) === 0) ? "Available" : "Occupied";
-            $schedule[$day][$slot][$lab] = $status;
-        }
+.laboratory-selector-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: #303f9f;
+    margin-bottom: 12px;
+}
+
+.laboratory-btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.laboratory-btn {
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-size: 13px;
+    transition: all 0.2s;
+    border: 1px solid #303f9f;
+    background: white;
+    color: #303f9f;
+}
+
+.laboratory-btn:hover {
+    background-color: #f8f9fa;
+    border-color: #303f9f;
+    color: #303f9f;
+}
+
+.laboratory-btn.active {
+    background-color: #303f9f;
+    border-color: #303f9f;
+    color: white;
+}
+
+.schedule-container {
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.schedule-header {
+    padding: 15px 20px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.schedule-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: #303f9f;
+    margin: 0;
+}
+
+.days-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    padding: 20px;
+}
+
+.day-card {
+    padding: 20px;
+    border-radius: 6px;
+    text-align: center;
+    transition: all 0.2s;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.day-card.available {
+    background-color: rgba(40, 167, 69, 0.1);
+    border: 1px solid rgba(40, 167, 69, 0.2);
+}
+
+.day-card.unavailable {
+    background-color: rgba(220, 53, 69, 0.1);
+    border: 1px solid rgba(220, 53, 69, 0.2);
+}
+
+.day-card.reserved {
+    background-color: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.2);
+}
+
+.day-name {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #303f9f;
+}
+
+.day-status {
+    font-size: 13px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    font-weight: 500;
+    color: #303f9f;
+    background: #f8f9fa;
+}
+
+.status-available {
+    background-color: #28a745;
+    color: white;
+}
+
+.status-unavailable {
+    background-color:  #dc3545;
+    color: white;
+}
+
+.status-reserved {
+    background-color: #ffc107;
+    color: white;
+}
+
+.status-indicator {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.available .status-indicator {
+    background-color: #303f9f;
+}
+
+.unavailable .status-indicator {
+    background-color: #303f9f;
+}
+
+.reserved .status-indicator {
+    background-color:  #303f9f;
+}
+
+/* Legend styles */
+.legend {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+}
+
+.legend-color {
+    width: 15px;
+    height: 15px;
+    border-radius: 3px;
+}
+
+.legend-available {
+    background-color: #28a745;
+}
+
+.legend-reserved {
+    background-color: #ffc107;
+}
+
+.legend-unavailable {
+    background-color: #dc3545;
+}
+
+.legend-item span {
+    color: #303f9f;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .days-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+        padding: 15px;
+    }
+    
+    .day-card {
+        padding: 15px;
+        min-height: 80px;
     }
 }
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Lab Schedule</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background-color: whitesmoke;
-            color: #6a0dad;
-            display: flex;
-        }
-        .sidebar {
-            width: 220px;
-            background-color: #6a0dad;
-            padding: 20px;
-            height: 100vh;
-            position: fixed;
-            overflow-y: auto;
-        }
-        .profile-pic {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 3px solid white;
-            object-fit: cover;
-        }
-        .sidebar .profile-section {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
-        }
-        .sidebar ul li {
-            margin: 10px 0;
-        }
-        .sidebar ul li a {
-            color: white;
-            text-decoration: none;
-            padding: 10px;
-            display: block;
-            border-radius: 5px;
-        }
-        .sidebar ul li a:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
 
-        .main-content {
-            margin-left: 260px;
-            padding: 40px;
-            width: calc(100% - 260px);
-        }
+@media (max-width: 576px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .days-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+    
+    .day-name {
+        font-size: 14px;
+    }
+    
+    .day-status {
+        font-size: 12px;
+    }
+}
+</style>
 
-        h2 {
-            color: #6a0dad;
-            margin-bottom: 10px;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        .tab-button {
-            background: none;
-            border: none;
-            color: #6a0dad;
-            padding: 10px 20px;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            font-size: 16px;
-        }
-        .tab-button.active {
-            border-color: #6a0dad;
-            color: #6a0dad;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: whitesmoke;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        th, td {
-            padding: 12px;
-            text-align: center;
-        }
-        th {
-            background-color: whitesmoke;
-            color: whitesmoke;
-        }
-        .available {
-            background-color: #16a34a;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 64px;
-        }
-        .occupied {
-            background-color: #dc2626;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 64px;
-        }
-        .legend {
-            margin-top: 20px;
-            background-color: #6a0dad;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 14px;
-            color: #cbd5e1;
-        }
-    </style>
-    <script>
-        function switchTab(tabName) {
-            const tables = document.querySelectorAll(".schedule-table");
-            tables.forEach(t => t.style.display = "none");
-            document.getElementById(tabName).style.display = "block";
-
-            const buttons = document.querySelectorAll(".tab-button");
-            buttons.forEach(btn => btn.classList.remove("active"));
-            document.getElementById("btn-" + tabName).classList.add("active");
-        }
-
-        window.onload = () => {
-            switchTab("Monday/Wednesday");
-        };
-    </script>
-</head>
-<body>
-    <div class="sidebar">
-        <div class="profile-section">
-            <img src="<?php echo htmlspecialchars($profile_picture); ?>" class="profile-pic">
-            <p><?php echo htmlspecialchars($firstname . " " . $lastname); ?></p>
-        </div>
-        <ul>
-        <li><a href="dashboard.php">Home</a></li>
-            <li><a href="profile.php">Edit Profile</a></li>
-            <li><a href="announcements.php">View Announcements</a></li>
-            <li><a href="SitinRules.php">Sit-in Rules</a></li>
-            <li><a href="Labrules&Regulations.php">Lab Rules</a></li>
-            <li><a href="Reservation.php">Reservation</a></li>
-            <li><a href="SitinHistory.php">Sit-in History</a></li>
-            <li><a href="LabResources.php">View Lab Resources</a></li>
-            <li><a href="ViewSession.php">Session</a></li>
-            <li><a href="Leaderboard.php">Leaderboard</a></li>
-            <li><a href="LabSchedule.php">Lab Schedule</a></li>
-            <li><a href="logout.php">Log Out</a></li>
-    </ul>
+<div class="container">
+    <div class="page-header">
+        <h1 class="page-title">Lab Schedule</h1>
     </div>
-
-    <div class="main-content">
-        <h2>Lab Schedule - <span id="day-label">Monday/Wednesday</span></h2>
-        <div class="tabs">
-            <?php foreach ($days as $day): ?>
-                <button class="tab-button" id="btn-<?php echo $day; ?>" onclick="switchTab('<?php echo $day; ?>')">
-                    <?php echo $day; ?>
-                </button>
+    
+    <!-- Legend -->
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color legend-available"></div>
+            <span>Available</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color legend-reserved"></div>
+            <span>Reserved</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color legend-unavailable"></div>
+            <span>Unavailable</span>
+        </div>
+    </div>
+    
+    <!-- Laboratory Selection -->
+    <div class="laboratory-selector">
+        <p class="laboratory-selector-title">Select Laboratory:</p>
+        <div class="laboratory-btn-group">
+            <a href="?laboratory=517" class="laboratory-btn <?= $current_laboratory == '517' ? 'active' : '' ?>">517</a>
+            <a href="?laboratory=524" class="laboratory-btn <?= $current_laboratory == '524' ? 'active' : '' ?>">524</a>
+            <a href="?laboratory=526" class="laboratory-btn <?= $current_laboratory == '526' ? 'active' : '' ?>">526</a>
+            <a href="?laboratory=528" class="laboratory-btn <?= $current_laboratory == '528' ? 'active' : '' ?>">528</a>
+            <a href="?laboratory=530" class="laboratory-btn <?= $current_laboratory == '530' ? 'active' : '' ?>">530</a>
+            <a href="?laboratory=542" class="laboratory-btn <?= $current_laboratory == '542' ? 'active' : '' ?>">542</a>
+            <a href="?laboratory=544" class="laboratory-btn <?= $current_laboratory == '544' ? 'active' : '' ?>">544</a>
+        </div>
+    </div>
+    
+    <div class="schedule-container">
+        <div class="schedule-header">
+            <h2 class="schedule-title">Lab Schedule: Room <?= htmlspecialchars($current_laboratory) ?></h2>
+        </div>
+        
+        <!-- Days Grid -->
+        <div class="days-grid">
+            <?php
+            $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            
+            foreach ($days as $day):
+                // Get status from the fetched data or default to 'available'
+                $status = isset($schedule_data[$day]) ? $schedule_data[$day] : 'available';
+                
+                // Determine status class and display text
+                $status_class = '';
+                $status_text = '';
+                switch($status) {
+                    case 'available':
+                        $status_class = 'available';
+                        $status_text = 'Available';
+                        break;
+                    case 'unavailable':
+                        $status_class = 'unavailable';
+                        $status_text = 'Unavailable';
+                        break;
+                    case 'reserved':
+                        $status_class = 'reserved';
+                        $status_text = 'Reserved';
+                        break;
+                    default:
+                        $status_class = 'available';
+                        $status_text = 'Available';
+                }
+            ?>
+            <div class="day-card <?= $status_class ?>">
+                <div class="status-indicator"></div>
+                <div class="day-name"><?= $day ?></div>
+                <div class="day-status status-<?= $status_class ?>">
+                    <?= $status_text ?>
+                </div>
+            </div>
             <?php endforeach; ?>
         </div>
-
-        <?php foreach ($days as $day): ?>
-            <div id="<?php echo $day; ?>" class="schedule-table" style="display: none;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Time Slot</th>
-                            <?php foreach ($labs as $lab): ?>
-                                <th><?php echo $lab; ?></th>
-                            <?php endforeach; ?>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($timeSlots as $slot): ?>
-                            <tr>
-                                <td><?php echo $slot; ?></td>
-                                <?php foreach ($labs as $lab): ?>
-                                    <?php $status = $schedule[$day][$slot][$lab]; ?>
-                                    <td class="<?php echo strtolower($status); ?>">
-                                        <?php echo $status; ?>
-                                    </td>
-                                <?php endforeach; ?>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php endforeach; ?>
-
-        <div class="legend">
-            <p><span class="available">Available</span> = Lab is vacant during this time</p>
-            <p><span class="occupied">Occupied</span> = Lab is in use during this time</p>
-            <p style="color: #fafafa; font-size: 12px;">Note: Lab availability is managed by administrators and applies for the entire semester.</p>
-        </div>
     </div>
-</body>
-</html>
-
-
+</div>
 

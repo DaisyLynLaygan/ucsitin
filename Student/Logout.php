@@ -1,7 +1,7 @@
 <?php
 session_start();
 session_destroy();
-header("Location: ../index.php");//redirected to landing page
+header("Location: Login.php");//redirected to login page
 exit();
 ?>
 

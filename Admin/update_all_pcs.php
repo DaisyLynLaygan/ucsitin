@@ -16,5 +16,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lab']) && isset($_POS
     $stmt->execute();
 }
 
-header("Location: Lab Management.php?lab=" . urlencode($_POST['lab']));
+// ✅ Fix redirect filename (no space!)
+header("Location: Lab-Management.php?lab=" . urlencode($_POST['lab']));
 exit();
